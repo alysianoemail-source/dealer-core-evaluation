@@ -1,0 +1,421 @@
+{
+  "version": "v1.0-demo",
+  "note": "每个键是企业名称，值是 rule_engine.run_full_assessment() 的输入数据",
+
+  "华曜智能终端有限公司": {
+    "company": {"name": "华曜智能终端有限公司", "is_listed": true, "industry": "消费电子", "stock_code": ""},
+    "d1": {
+      "d1_revenue_growth":     {"company_value": 22.0, "benchmark_value": 10.0, "benchmark_vintage": "2025年度"},
+      "d1_roe":                {"company_value": 16.0, "benchmark_value": 3.0, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_profit_margin":      {"company_value": 18.0, "benchmark_value": 3.0, "benchmark_vintage": "2025年度"},
+      "d1_inventory_turnover": {"company_value": 7.0,  "benchmark_value": 6.0, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_asset_return":       {"company_value": 9.0,  "benchmark_value": 2.5, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_debt_ratio":         {"company_value": 32.0, "benchmark_value": 55.0, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_shipment_index":     {"company_value": 85.0, "benchmark_value": 70.0, "benchmark_vintage": "2025年度"},
+      "d1_raw_material_price": {"company_value": 45.0, "benchmark_value": 40.0, "benchmark_vintage": "2025年度"},
+      "d1_retail_sales":       {"company_value": 10.0, "benchmark_value": 5.0, "benchmark_vintage": "2025年度"},
+      "d1_excess_return":      {"company_value": 8.0,  "benchmark_value": 0.0, "benchmark_vintage": "2025年度"},
+      "d1_pe_percentile":      {"company_value": 20.0, "benchmark_value": 50.0, "benchmark_vintage": "2025年度"},
+      "d1_analyst_sentiment":  {"company_value": "正面为主"}
+    },
+    "d2": {
+      "d2_brand_tier": "A",
+      "d2_market_share": {"rank": "5/80", "score": 90.0},
+      "d2_gross_margin":     {"company_value": 25.0, "benchmark_value": 3.0, "benchmark_vintage": "2024年度(行业均值)"},
+      "d2_cashflow_ratio":   {"company_value": 0.35, "benchmark_value": 0.08, "benchmark_vintage": "2024年度(行业均值)"},
+      "d2_patent_count":     {"company_value": 8500, "benchmark_value": null},
+      "d2_public_sentiment": {"company_value": "正面为主"},
+      "d2_rd_intensity":     {"company_value": 6.0, "benchmark_value": 2.5, "benchmark_vintage": "2024年度(行业均值)"}
+    },
+    "d3": {
+      "d3_registered_capital":   {"company_value": 30.0, "benchmark_value": 8.0},
+      "d3_paid_capital_ratio":   {"company_value": 100.0},
+      "d3_establishment_years":  {"company_value": 15.0},
+      "d3_insured_count":        {"company_value": 5000, "benchmark_value": 500},
+      "d3_bidding_count":        {"company_value": 150, "benchmark_value": 30},
+      "d3_tax_rating":           {"company_value": "A", "consecutive_a_years": 8},
+      "d3_patent_count":         {"company_value": 8500, "benchmark_value": 1000},
+      "d3_revenue":              {"company_value": 320.0, "unit": "亿"},
+      "d3_net_profit":           {"company_value": 48.0, "unit": "亿"},
+      "d3_debt_ratio":           {"company_value": 32.0},
+      "d3_operating_cashflow":   {"company_value": 65.0, "unit": "亿"},
+      "d3_guarantee_ratio":      {"company_value": 8.0, "benchmark_value": 10.0}
+    },
+    "d4": {
+      "d4_dealer_count":              {"company_value": 45.0, "benchmark_value": 50.0},
+      "d4_channel_levels":            {"company_value": 3.0, "benchmark_value": 4.0, "direction": "higher_better"},
+      "d4_region_coverage":           {"company_value": 28.0, "benchmark_value": 25.0},
+      "d4_abnormal_ratio":            {"company_value": 2.0, "benchmark_value": 10.0},
+      "d4_median_establishment_years": {"company_value": 10.0, "benchmark_value": 5.0},
+      "d4_median_insured":            {"company_value": 35.0, "benchmark_value": 20.0},
+      "d4_top1_dealer_ratio":         {"company_value": 15.0, "benchmark_value": 20.0},
+      "d4_top3_dealer_ratio":         {"company_value": 35.0, "benchmark_value": 40.0},
+      "d4_single_region_ratio":       {"company_value": 15.0, "benchmark_value": 15.0}
+    },
+    "redline": {
+      "R001_失信": {"triggered": false, "verified": true, "sources": ["qcc", "中国执行信息公开网"]},
+      "R002_税收违法": {"triggered": false, "verified": true, "sources": ["qcc", "信用中国"]},
+      "R003_经营异常": {"triggered": false, "verified": true, "sources": ["qcc", "国家企业信用信息公示系统"]},
+      "R004_重大行政处罚": {"triggered": false, "verified": true, "sources": ["qcc", "信用中国"]},
+      "R005_假冒伪劣": {"triggered": false, "verified": true, "sources": ["qcc", "中国裁判文书网"]},
+      "R006_非法经营": {"triggered": false, "verified": true, "sources": ["qcc", "国家企业信用信息公示系统"]}
+    },
+    "_volume_direction": "up",
+    "_price_direction": "stable",
+    "_external_adjustment": 5,
+    "_related_party_result": {"checks": {"equity_penetration": false, "controller_overlap": false, "executive_overlap": false, "dealer_cross_hold": false}}
+  },
+
+  "恒岳智慧家电有限公司": {
+    "company": {"name": "恒岳智慧家电有限公司", "is_listed": false, "industry": "智能家电", "stock_code": ""},
+    "d1": {
+      "d1_revenue_growth":     {"company_value": 10.0, "benchmark_value": 6.4, "benchmark_vintage": "2025年度"},
+      "d1_roe":                {"company_value": 10.0, "benchmark_value": 3.2, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_profit_margin":      {"company_value": 10.0, "benchmark_value": 2.0, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_inventory_turnover": {"company_value": 6.5,  "benchmark_value": 6.6, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_asset_return":       {"company_value": 5.0,  "benchmark_value": 2.3, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_debt_ratio":         {"company_value": 50.0, "benchmark_value": 59.3, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_aircon_shipment":    {"company_value": 75.0, "benchmark_value": 80.0, "benchmark_vintage": "2025年度"},
+      "d1_raw_material_price": {"company_value": 50.0, "benchmark_value": 40.0, "benchmark_vintage": "2025年度"},
+      "d1_retail_sales":       {"company_value": 6.0,  "benchmark_value": 5.0, "benchmark_vintage": "2025年度"},
+      "d1_excess_return":      {"company_value": 2.0,  "benchmark_value": 0.0, "benchmark_vintage": "2025年度"},
+      "d1_pe_percentile":      {"company_value": 40.0, "benchmark_value": 50.0, "benchmark_vintage": "2025年度"},
+      "d1_analyst_sentiment":  {"company_value": "中性偏正面"}
+    },
+    "d2": {
+      "d2_brand_tier": "B+",
+      "d2_market_share": {"rank": "15/60", "score": 70.0},
+      "d2_proxy": {"revenue_rank_score": 65.0, "tax_score": 70.0, "bidding_score": 60.0},
+      "d2_public_sentiment": {"company_value": "中性"},
+      "d2_rd_intensity":     {"company_value": 3.0, "benchmark_value": 2.5, "benchmark_vintage": "2024年度(行业均值)"}
+    },
+    "d3": {
+      "d3_registered_capital":   {"company_value": 10.0, "benchmark_value": 8.0},
+      "d3_paid_capital_ratio":   {"company_value": 100.0},
+      "d3_establishment_years":  {"company_value": 12.0},
+      "d3_insured_count":        {"company_value": 800, "benchmark_value": 500},
+      "d3_bidding_count":        {"company_value": 50, "benchmark_value": 30},
+      "d3_tax_rating":           {"company_value": "A", "consecutive_a_years": 5},
+      "d3_patent_count":         {"company_value": 300, "benchmark_value": 1000},
+      "d3_financial_proxy":      {"tax_score": 60.0, "insured_score": 55.0, "bidding_score": 50.0}
+    },
+    "d4": {
+      "d4_dealer_count":              {"company_value": 25.0, "benchmark_value": 50.0},
+      "d4_channel_levels":            {"company_value": 3.0, "benchmark_value": 4.0, "direction": "higher_better"},
+      "d4_region_coverage":           {"company_value": 15.0, "benchmark_value": 25.0},
+      "d4_abnormal_ratio":            {"company_value": 5.0, "benchmark_value": 10.0},
+      "d4_median_establishment_years": {"company_value": 7.0, "benchmark_value": 5.0},
+      "d4_median_insured":            {"company_value": 25.0, "benchmark_value": 20.0},
+      "d4_top1_dealer_ratio":         {"company_value": 25.0, "benchmark_value": 20.0},
+      "d4_top3_dealer_ratio":         {"company_value": 50.0, "benchmark_value": 40.0},
+      "d4_single_region_ratio":       {"company_value": 20.0, "benchmark_value": 15.0}
+    },
+    "redline": {
+      "R001_失信": {"triggered": false, "verified": true, "sources": ["qcc", "中国执行信息公开网"]},
+      "R002_税收违法": {"triggered": false, "verified": true, "sources": ["qcc", "信用中国"]},
+      "R003_经营异常": {"triggered": false, "verified": true, "sources": ["qcc", "国家企业信用信息公示系统"]},
+      "R004_重大行政处罚": {"triggered": false, "verified": true, "sources": ["qcc", "信用中国"]},
+      "R005_假冒伪劣": {"triggered": false, "verified": true, "sources": ["qcc", "中国裁判文书网"]},
+      "R006_非法经营": {"triggered": false, "verified": true, "sources": ["qcc", "国家企业信用信息公示系统"]}
+    },
+    "_volume_direction": "stable",
+    "_price_direction": "stable",
+    "_external_adjustment": 0,
+    "_related_party_result": {"checks": {"equity_penetration": false, "controller_overlap": false, "executive_overlap": false, "dealer_cross_hold": false}}
+  },
+
+  "绿驰储能设备有限公司": {
+    "company": {"name": "绿驰储能设备有限公司", "is_listed": false, "industry": "储能设备", "stock_code": ""},
+    "d1": {
+      "d1_revenue_growth":     {"company_value": 9.9, "benchmark_value": 6.4, "benchmark_vintage": "2025年度"},
+      "d1_roe":                {"company_value": 9.9, "benchmark_value": 3.2, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_profit_margin":      {"company_value": 9.9, "benchmark_value": 2.0, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_inventory_turnover": {"company_value": 6.5,  "benchmark_value": 6.6, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_asset_return":       {"company_value": 4.0,  "benchmark_value": 2.3, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_debt_ratio":         {"company_value": 50.0, "benchmark_value": 59.3, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_raw_material_price": {"company_value": 55.0, "benchmark_value": 40.0, "benchmark_vintage": "2025年度"},
+      "d1_retail_sales":       {"company_value": 5.0,  "benchmark_value": 5.0, "benchmark_vintage": "2025年度"},
+      "d1_excess_return":      {"company_value": null, "benchmark_value": null},
+      "d1_pe_percentile":      {"company_value": null, "benchmark_value": null},
+      "d1_analyst_sentiment":  {"company_value": "中性"}
+    },
+    "d2": {
+      "d2_brand_tier": "B",
+      "d2_market_share": {"rank": "", "score": 55.0},
+      "d2_proxy": {"revenue_rank_score": 50.0, "tax_score": 55.0, "bidding_score": 45.0},
+      "d2_public_sentiment": {"company_value": "中性"}
+    },
+    "d3": {
+      "d3_registered_capital":   {"company_value": 3.0, "benchmark_value": 8.0},
+      "d3_paid_capital_ratio":   {"company_value": 80.0},
+      "d3_establishment_years":  {"company_value": 8.0},
+      "d3_insured_count":        {"company_value": 200, "benchmark_value": 500},
+      "d3_bidding_count":        {"company_value": 20, "benchmark_value": 30},
+      "d3_tax_rating":           {"company_value": "A"},
+      "d3_financial_proxy":      {"tax_score": 45.0, "insured_score": 40.0, "bidding_score": 35.0}
+    },
+    "d4": {
+      "d4_dealer_count":              {"company_value": 15.0, "benchmark_value": 50.0},
+      "d4_channel_levels":            {"company_value": 2.0, "benchmark_value": 4.0, "direction": "higher_better"},
+      "d4_region_coverage":           {"company_value": 8.0, "benchmark_value": 25.0},
+      "d4_abnormal_ratio":            {"company_value": 8.0, "benchmark_value": 10.0},
+      "d4_median_establishment_years": {"company_value": 5.0, "benchmark_value": 5.0},
+      "d4_median_insured":            {"company_value": 15.0, "benchmark_value": 20.0},
+      "d4_top1_dealer_ratio":         {"company_value": 35.0, "benchmark_value": 20.0},
+      "d4_top3_dealer_ratio":         {"company_value": 65.0, "benchmark_value": 40.0},
+      "d4_single_region_ratio":       {"company_value": 40.0, "benchmark_value": 15.0}
+    },
+    "redline": {
+      "R001_失信": {"triggered": false, "verified": true, "sources": ["qcc", "中国执行信息公开网"]},
+      "R002_税收违法": {"triggered": false, "verified": true, "sources": ["qcc", "信用中国"]},
+      "R003_经营异常": {"triggered": false, "verified": true, "sources": ["qcc", "国家企业信用信息公示系统"]},
+      "R004_重大行政处罚": {"triggered": false, "verified": true, "sources": ["qcc", "信用中国"], "penalty_amount": 15000, "note": "小额行政处罚，非一票否决红线标准"},
+      "R005_假冒伪劣": {"triggered": false, "verified": true, "sources": ["qcc", "中国裁判文书网"]},
+      "R006_非法经营": {"triggered": false, "verified": true, "sources": ["qcc", "国家企业信用信息公示系统"]}
+    },
+    "_volume_direction": "stable",
+    "_price_direction": "down",
+    "_external_adjustment": 0,
+    "_related_party_result": {"checks": {"equity_penetration": false, "controller_overlap": false, "executive_overlap": false, "dealer_cross_hold": false}}
+  },
+
+  "新港工业材料有限公司": {
+    "company": {"name": "新港工业材料有限公司", "is_listed": false, "industry": "工业材料", "stock_code": ""},
+    "d1": {
+      "d1_revenue_growth":     {"company_value": 0.0, "benchmark_value": 6.4, "benchmark_vintage": "2025年度"},
+      "d1_roe":                {"company_value": 4.9, "benchmark_value": 3.2, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_profit_margin":      {"company_value": null, "benchmark_value": 2.0, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_inventory_turnover": {"company_value": 5.2, "benchmark_value": 6.6, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_asset_return":       {"company_value": 4.0, "benchmark_value": 2.3, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_debt_ratio":         {"company_value": 65.0, "benchmark_value": 59.3, "benchmark_vintage": "2024年度(行业均值)"},
+      "d1_raw_material_price": {"company_value": 50.0, "benchmark_value": 40.0, "benchmark_vintage": "2025年度"},
+      "d1_excess_return":      {"company_value": null, "benchmark_value": null},
+      "d1_pe_percentile":      {"company_value": null, "benchmark_value": null},
+      "d1_analyst_sentiment":  {"company_value": "中性偏负面"}
+    },
+    "d2": {
+      "d2_brand_tier": "C+",
+      "d2_market_share": {"rank": "", "score": 40.0},
+      "d2_proxy": {"revenue_rank_score": 45.0, "tax_score": 40.0, "bidding_score": 35.0},
+      "d2_public_sentiment": {"company_value": "中性偏负面"}
+    },
+    "d3": {
+      "d3_registered_capital":   {"company_value": 5.0, "benchmark_value": 8.0},
+      "d3_paid_capital_ratio":   {"company_value": 100.0},
+      "d3_establishment_years":  {"company_value": 6.0},
+      "d3_insured_count":        {"company_value": 150, "benchmark_value": 500},
+      "d3_bidding_count":        {"company_value": 15, "benchmark_value": 30},
+      "d3_tax_rating":           {"company_value": "B"},
+      "d3_financial_proxy":      {"tax_score": 40.0, "insured_score": 35.0, "bidding_score": 30.0}
+    },
+    "d4": {
+      "d4_dealer_count":              {"company_value": 10.0, "benchmark_value": 50.0},
+      "d4_channel_levels":            {"company_value": 2.0, "benchmark_value": 4.0, "direction": "higher_better"},
+      "d4_region_coverage":           {"company_value": 5.0, "benchmark_value": 25.0},
+      "d4_abnormal_ratio":            {"company_value": 12.0, "benchmark_value": 10.0},
+      "d4_median_establishment_years": {"company_value": 4.0, "benchmark_value": 5.0},
+      "d4_median_insured":            {"company_value": 8.0, "benchmark_value": 20.0},
+      "d4_top1_dealer_ratio":         {"company_value": 45.0, "benchmark_value": 20.0},
+      "d4_top3_dealer_ratio":         {"company_value": 75.0, "benchmark_value": 40.0},
+      "d4_single_region_ratio":       {"company_value": 55.0, "benchmark_value": 15.0}
+    },
+    "redline": {
+      "R001_失信": {"triggered": false, "verified": true, "sources": ["qcc", "中国执行信息公开网"]},
+      "R002_税收违法": {"triggered": false, "verified": true, "sources": ["qcc", "信用中国"]},
+      "R003_经营异常": {"triggered": false, "verified": true, "sources": ["qcc", "国家企业信用信息公示系统"]},
+      "R004_重大行政处罚": {"triggered": false, "verified": true, "sources": ["qcc", "信用中国"]},
+      "R005_假冒伪劣": {"triggered": false, "verified": true, "sources": ["qcc", "中国裁判文书网"]},
+      "R006_非法经营": {"triggered": false, "verified": true, "sources": ["qcc", "国家企业信用信息公示系统"]}
+    },
+    "_volume_direction": "down",
+    "_price_direction": "stable",
+    "_external_adjustment": 0,
+    "_related_party_result": {"checks": {"equity_penetration": false, "controller_overlap": false, "executive_overlap": false, "dealer_cross_hold": false}}
+  },
+
+  "远辰精密化工有限公司": {
+    "company": {"name": "远辰精密化工有限公司", "is_listed": false, "industry": "家用电器", "stock_code": ""},
+    "d1": {
+      "d1_revenue_growth":     {"company_value": 5.0, "benchmark_value": 6.4},
+      "d1_roe":                {"company_value": 8.0, "benchmark_value": 3.2},
+      "d1_profit_margin":      {"company_value": 10.0, "benchmark_value": 2.0},
+      "d1_inventory_turnover": {"company_value": 5.0, "benchmark_value": 6.6},
+      "d1_asset_return":       {"company_value": 4.0, "benchmark_value": 2.3},
+      "d1_debt_ratio":         {"company_value": 70.0, "benchmark_value": 59.3},
+      "d1_aircon_shipment":    {"company_value": 70.0, "benchmark_value": 80.0},
+      "d1_raw_material_price": {"company_value": 55.0, "benchmark_value": 40.0},
+      "d1_retail_sales":       {"company_value": 4.0, "benchmark_value": 5.0},
+      "d1_excess_return":      {"company_value": null, "benchmark_value": null},
+      "d1_pe_percentile":      {"company_value": null, "benchmark_value": null},
+      "d1_analyst_sentiment":  {"company_value": "中性偏负面"}
+    },
+    "d2": {
+      "d2_brand_tier": "B",
+      "d2_market_share": {"rank": "", "score": 50.0},
+      "d2_proxy": {"revenue_rank_score": 45.0, "tax_score": 40.0, "bidding_score": 50.0},
+      "d2_patent_count":     {"company_value": 500, "benchmark_value": null},
+      "d2_public_sentiment": {"company_value": "中性"},
+      "d2_rd_intensity":     {"company_value": 2.0, "benchmark_value": 2.5}
+    },
+    "d3": {
+      "d3_registered_capital":   {"company_value": 1.0, "benchmark_value": 8.0},
+      "d3_paid_capital_ratio":   {"company_value": 50.0},
+      "d3_establishment_years":  {"company_value": 8.0},
+      "d3_insured_count":        {"company_value": 80, "benchmark_value": 500},
+      "d3_bidding_count":        {"company_value": 10, "benchmark_value": 30},
+      "d3_tax_rating":           {"company_value": "B"},
+      "d3_patent_count":         {"company_value": 50, "benchmark_value": 1000},
+      "d3_financial_proxy": {"tax_score": 35.0, "insured_score": 30.0, "bidding_score": 25.0}
+    },
+    "d4": {
+      "d4_dealer_count":              {"company_value": 5.0, "benchmark_value": 50.0},
+      "d4_channel_levels":            {"company_value": 1.0, "benchmark_value": 4.0},
+      "d4_region_coverage":           {"company_value": 2.0, "benchmark_value": 25.0},
+      "d4_abnormal_ratio":            {"company_value": 25.0, "benchmark_value": 10.0},
+      "d4_median_establishment_years": {"company_value": 3.0, "benchmark_value": 5.0},
+      "d4_median_insured":            {"company_value": 5.0, "benchmark_value": 20.0},
+      "d4_top1_dealer_ratio":         {"company_value": 60.0, "benchmark_value": 20.0},
+      "d4_top3_dealer_ratio":         {"company_value": 90.0, "benchmark_value": 40.0},
+      "d4_single_region_ratio":       {"company_value": 80.0, "benchmark_value": 15.0}
+    },
+    "redline": {
+      "R001_失信": {"triggered": false, "verified": true, "sources": ["qcc", "中国执行信息公开网"]},
+      "R002_税收违法": {"triggered": true, "verified": true, "sources": ["qcc", "信用中国"]},
+      "R003_经营异常": {"triggered": false, "verified": true, "sources": ["qcc", "国家企业信用信息公示系统"]},
+      "R004_重大行政处罚": {"triggered": false, "verified": true, "sources": ["qcc", "信用中国"]},
+      "R005_假冒伪劣": {"triggered": false, "verified": true, "sources": ["qcc", "中国裁判文书网"]},
+      "R006_非法经营": {"triggered": false, "verified": true, "sources": ["qcc", "国家企业信用信息公示系统"]}
+    },
+    "_volume_direction": "down",
+    "_price_direction": "up",
+    "_external_adjustment": 0,
+    "_related_party_result": {"checks": {"equity_penetration": false, "controller_overlap": false, "executive_overlap": false, "dealer_cross_hold": false}}
+  },
+
+  "格力电器": {
+    "company": {"name": "格力电器", "is_listed": true, "industry": "家用电器", "stock_code": "000651.SZ"},
+    "d1": {
+      "d1_revenue_growth":     {"company_value": -9.89, "benchmark_value": 6.4, "benchmark_vintage": "2025年度"},
+      "d1_roe":                {"company_value": 20.3,  "benchmark_value": 3.2, "benchmark_vintage": "2024年度(全行业均值)"},
+      "d1_profit_margin":      {"company_value": 30.0,  "benchmark_value": 2.0, "benchmark_vintage": "2024年度(全行业均值)"},
+      "d1_inventory_turnover": {"company_value": 4.5,   "benchmark_value": 6.6, "benchmark_vintage": "2024年度(全行业均值)"},
+      "d1_asset_return":       {"company_value": 8.0,   "benchmark_value": 2.3, "benchmark_vintage": "2024年度(全行业均值)"},
+      "d1_debt_ratio":         {"company_value": 61.7,  "benchmark_value": 59.3, "benchmark_vintage": "2024年度(全行业均值)"},
+      "d1_aircon_shipment":    {"company_value": 75.0,  "benchmark_value": 80.0, "benchmark_vintage": "2025年度"},
+      "d1_raw_material_price": {"company_value": 50.0,  "benchmark_value": 40.0, "benchmark_vintage": "2025年度"},
+      "d1_retail_sales":       {"company_value": 8.0,   "benchmark_value": 5.0, "benchmark_vintage": "2025年度"},
+      "d1_excess_return":      {"company_value": 5.0,   "benchmark_value": 0.0, "benchmark_vintage": "2025年度"},
+      "d1_pe_percentile":      {"company_value": 10.0,  "benchmark_value": 50.0, "benchmark_vintage": "2025年度"},
+      "d1_analyst_sentiment":  {"company_value": "中性偏正面"}
+    },
+    "d2": {
+      "d2_brand_tier": "A",
+      "d2_market_share": {"rank": "2/88", "score": 85.0},
+      "d2_gross_margin":     {"company_value": 30.0, "benchmark_value": 2.0, "benchmark_vintage": "2024年度(全行业均值)"},
+      "d2_cashflow_ratio":   {"company_value": 0.272, "benchmark_value": 0.08, "benchmark_vintage": "2024年度(全行业均值)"},
+      "d2_patent_count":     {"company_value": 126247, "benchmark_value": null},
+      "d2_public_sentiment": {"company_value": "正面为主"},
+      "d2_rd_intensity":     {"company_value": 3.5, "benchmark_value": 2.5, "benchmark_vintage": "2024年度(全行业均值)"}
+    },
+    "d3": {
+      "d3_registered_capital":   {"company_value": 56.01, "benchmark_value": 8.0},
+      "d3_paid_capital_ratio":   {"company_value": 100.0},
+      "d3_establishment_years":  {"company_value": 36.0},
+      "d3_insured_count":        {"company_value": 19225, "benchmark_value": 500},
+      "d3_bidding_count":        {"company_value": 294, "benchmark_value": 30},
+      "d3_tax_rating":           {"company_value": "A", "consecutive_a_years": 12},
+      "d3_patent_count":         {"company_value": 126247, "benchmark_value": 1000},
+      "d3_revenue":              {"company_value": 1704.47, "unit": "亿"},
+      "d3_net_profit":           {"company_value": 290.03, "unit": "亿"},
+      "d3_debt_ratio":           {"company_value": 61.73},
+      "d3_operating_cashflow":   {"company_value": 463.83, "unit": "亿"},
+      "d3_guarantee_ratio":      {"company_value": 5.0, "benchmark_value": 10.0}
+    },
+    "d4": {
+      "d4_dealer_count":              {"company_value": 30.0, "benchmark_value": 50.0},
+      "d4_channel_levels":            {"company_value": 3.0, "benchmark_value": 4.0, "direction": "higher_better"},
+      "d4_region_coverage":           {"company_value": 30.0, "benchmark_value": 25.0},
+      "d4_abnormal_ratio":            {"company_value": 5.0, "benchmark_value": 10.0},
+      "d4_median_establishment_years": {"company_value": 8.0, "benchmark_value": 5.0},
+      "d4_median_insured":            {"company_value": 30.0, "benchmark_value": 20.0},
+      "d4_top1_dealer_ratio":         {"company_value": 13.0, "benchmark_value": 20.0},
+      "d4_top3_dealer_ratio":         {"company_value": 30.0, "benchmark_value": 40.0},
+      "d4_single_region_ratio":       {"company_value": 3.0, "benchmark_value": 15.0}
+    },
+    "redline": {
+      "R001_失信": {"triggered": false, "verified": true, "sources": ["qcc", "中国执行信息公开网"]},
+      "R002_税收违法": {"triggered": false, "verified": true, "sources": ["qcc", "信用中国"]},
+      "R003_经营异常": {"triggered": false, "verified": true, "sources": ["qcc", "国家企业信用信息公示系统"]},
+      "R004_重大行政处罚": {"triggered": false, "verified": true, "sources": ["qcc", "信用中国"]},
+      "R005_假冒伪劣": {"triggered": false, "verified": true, "sources": ["qcc", "中国裁判文书网"]},
+      "R006_非法经营": {"triggered": false, "verified": true, "sources": ["qcc", "国家企业信用信息公示系统"]}
+    },
+    "_volume_direction": "down",
+    "_price_direction": "stable",
+    "_external_adjustment": 5,
+    "_related_party_result": {"checks": {"equity_penetration": false, "controller_overlap": false, "executive_overlap": false, "dealer_cross_hold": false}}
+  },
+
+  "荣耀终端股份有限公司": {
+    "company": {"name": "荣耀终端股份有限公司", "is_listed": false, "industry": "消费电子", "stock_code": ""},
+    "d1": {
+      "d1_revenue_growth":     {"company_value": 15.0, "benchmark_value": 10.0, "benchmark_vintage": "2025年度"},
+      "d1_roe":                {"company_value": 18.0, "benchmark_value": 3.0, "benchmark_vintage": "2024年度(全行业均值)"},
+      "d1_profit_margin":      {"company_value": 12.0, "benchmark_value": 3.0, "benchmark_vintage": "2024年度(全行业均值)"},
+      "d1_inventory_turnover": {"company_value": 6.0,  "benchmark_value": 6.0, "benchmark_vintage": "2024年度(全行业均值)"},
+      "d1_asset_return":       {"company_value": 10.6, "benchmark_value": 2.5, "benchmark_vintage": "2024年度(全行业均值)"},
+      "d1_debt_ratio":         {"company_value": 42.0, "benchmark_value": 55.0, "benchmark_vintage": "2024年度(全行业均值)"},
+      "d1_shipment_index":     {"company_value": 75.0, "benchmark_value": 70.0, "benchmark_vintage": "2025年度"},
+      "d1_raw_material_price": {"company_value": 45.0, "benchmark_value": 40.0, "benchmark_vintage": "2025年度"},
+      "d1_retail_sales":       {"company_value": 8.5,  "benchmark_value": 5.0, "benchmark_vintage": "2025年度"},
+      "d1_excess_return":      {"company_value": 3.0,  "benchmark_value": 0.0, "benchmark_vintage": "2025年度"},
+      "d1_pe_percentile":      {"company_value": 30.0, "benchmark_value": 50.0, "benchmark_vintage": "2025年度"},
+      "d1_analyst_sentiment":  {"company_value": "正面为主"}
+    },
+    "d2": {
+      "d2_brand_tier": "A",
+      "d2_market_share": {"rank": "6/80", "score": 78.0},
+      "d2_proxy": {"revenue_rank_score": 72.0, "tax_score": 75.0, "bidding_score": 65.0},
+      "d2_patent_count":     {"company_value": 12000, "benchmark_value": null},
+      "d2_public_sentiment": {"company_value": "正面为主"},
+      "d2_rd_intensity":     {"company_value": 8.0, "benchmark_value": 2.5}
+    },
+    "d3": {
+      "d3_registered_capital":   {"company_value": 60.0, "benchmark_value": 8.0},
+      "d3_paid_capital_ratio":   {"company_value": 100.0},
+      "d3_establishment_years":  {"company_value": 10.0},
+      "d3_insured_count":        {"company_value": 8000, "benchmark_value": 500},
+      "d3_bidding_count":        {"company_value": 120, "benchmark_value": 30},
+      "d3_tax_rating":           {"company_value": "A", "consecutive_a_years": 5},
+      "d3_patent_count":         {"company_value": 12000, "benchmark_value": 1000},
+      "d3_revenue":              {"company_value": 600.0, "unit": "亿"},
+      "d3_net_profit":           {"company_value": 60.0, "unit": "亿"},
+      "d3_debt_ratio":           {"company_value": 42.0},
+      "d3_operating_cashflow":   {"company_value": 80.0, "unit": "亿"},
+      "d3_guarantee_ratio":      {"company_value": 5.0, "benchmark_value": 10.0}
+    },
+    "d4": {
+      "d4_dealer_count":              {"company_value": 200.0, "benchmark_value": 100.0},
+      "d4_channel_levels":            {"company_value": 4.0, "benchmark_value": 4.0, "direction": "higher_better"},
+      "d4_region_coverage":           {"company_value": 30.0, "benchmark_value": 25.0},
+      "d4_abnormal_ratio":            {"company_value": 3.0, "benchmark_value": 10.0},
+      "d4_median_establishment_years": {"company_value": 6.0, "benchmark_value": 5.0},
+      "d4_median_insured":            {"company_value": 25.0, "benchmark_value": 20.0},
+      "d4_top1_dealer_ratio":         {"company_value": 8.0, "benchmark_value": 15.0},
+      "d4_top3_dealer_ratio":         {"company_value": 20.0, "benchmark_value": 30.0},
+      "d4_single_region_ratio":       {"company_value": 10.0, "benchmark_value": 15.0}
+    },
+    "redline": {
+      "R001_失信": {"triggered": false, "verified": true, "sources": ["qcc", "中国执行信息公开网"]},
+      "R002_税收违法": {"triggered": false, "verified": true, "sources": ["qcc", "信用中国"]},
+      "R003_经营异常": {"triggered": false, "verified": true, "sources": ["qcc", "国家企业信用信息公示系统"]},
+      "R004_重大行政处罚": {"triggered": false, "verified": true, "sources": ["qcc", "信用中国"]},
+      "R005_假冒伪劣": {"triggered": false, "verified": true, "sources": ["qcc", "中国裁判文书网"]},
+      "R006_非法经营": {"triggered": false, "verified": true, "sources": ["qcc", "国家企业信用信息公示系统"]}
+    },
+    "_volume_direction": "up",
+    "_price_direction": "up",
+    "_external_adjustment": 3,
+    "_related_party_result": {"checks": {"equity_penetration": false, "controller_overlap": false, "executive_overlap": false, "dealer_cross_hold": false}}
+  }
+}

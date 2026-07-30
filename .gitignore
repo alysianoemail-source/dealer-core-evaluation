@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# 环境
+.env
+.env.local
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 系统
+Thumbs.db
+.DS_Store
+
+# 日志（保留目录结构，忽略内容）
+logs/**/*
+!logs/**/.gitkeep
+
+# 大文件 / 临时
+*.csv
+data_cache/company_financials/*
+data_cache/industry_benchmarks/*
+!data_cache/index.json
+
+# 记忆文件（由规则引擎自动写入，不提交）
+memory/records/*
+!memory/index.json
+!memory/README.md

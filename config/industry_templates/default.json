@@ -1,0 +1,151 @@
+{
+  "version": "v1.0",
+  "last_updated": "2026-07-26",
+  "industry": {
+    "name": "default",
+    "sw_level1": "通用",
+    "sw_level2": "通用",
+    "edb_industry": "制造业",
+    "edb_broad_industry": "制造业",
+    "peer_search_query": "申万{industry}行业上市公司",
+    "note": "兜底模板。未配置专属模板的行业使用此模板。指标选择偏向通用制造业逻辑。"
+  },
+
+  "dimension_1": {
+    "name": "行业景气",
+    "weight_pct": 15,
+    "sub_dimensions": {
+      "基本面": {
+        "weight_pct": 50,
+        "indicators": [
+          {"id": "d1_revenue_growth", "name": "营收增速", "direction": "higher_better", "data_source": "ifind_stock"},
+          {"id": "d1_roe", "name": "ROE", "direction": "higher_better", "data_source": "ifind_stock"},
+          {"id": "d1_profit_margin", "name": "销售利润率", "direction": "higher_better", "data_source": "ifind_stock"},
+          {"id": "d1_inventory_turnover", "name": "存货周转率", "direction": "higher_better", "data_source": "ifind_stock"},
+          {"id": "d1_asset_return", "name": "总资产报酬率", "direction": "higher_better", "data_source": "ifind_stock"},
+          {"id": "d1_debt_ratio", "name": "资产负债率", "direction": "sweet_spot", "sweet_spot": {"min": 40, "max": 60}}
+        ]
+      },
+      "量价领先": {
+        "weight_pct": 30,
+        "indicators": [
+          {"id": "d1_shipment_volume", "name": "出货量趋势", "direction": "higher_better", "data_source": "ifind_edb"},
+          {"id": "d1_raw_material_price", "name": "原材料价格趋势", "direction": "lower_better", "data_source": "ifind_edb"},
+          {"id": "d1_retail_sales", "name": "终端零售增速", "direction": "higher_better", "data_source": "ifind_edb"}
+        ],
+        "price_volume_adjustment": {
+          "rules": {
+            "volume_up_price_up":   {"adjustment": 3,  "narrative": "量价齐升=需求拉动"},
+            "volume_up_price_down": {"adjustment": -2, "narrative": "量涨价跌=降价换量"},
+            "volume_down_price_up": {"adjustment": -2, "narrative": "量缩价涨=成本推动"},
+            "volume_down_price_down": {"adjustment": -8, "narrative": "量价齐跌=需求萎缩"}
+          }
+        }
+      },
+      "市场预期": {
+        "weight_pct": 20,
+        "indicators": [
+          {"id": "d1_excess_return", "name": "超额收益(vs沪深300)", "direction": "higher_better", "data_source": "ifind_stock"},
+          {"id": "d1_pe_percentile", "name": "PE分位(5年)", "direction": "lower_better", "data_source": "ifind_stock"},
+          {"id": "d1_analyst_sentiment", "name": "研报调整方向", "direction": "discrete", "data_source": "ifind_news",
+           "benchmark_method": "discrete",
+           "lookup": {"多数上调": 85, "中性偏正面": 70, "多数维持": 60, "中性偏负面": 40, "多数下调": 20}}
+        ]
+      },
+      "外生调整": {
+        "weight_pct": 0,
+        "max_adjustment": 10
+      }
+    }
+  },
+
+  "dimension_2": {
+    "name": "品牌竞争力",
+    "weight_pct": 15,
+    "sub_dimensions": {
+      "市场地位": {
+        "weight_pct": 50,
+        "indicators": [
+          {"id": "d2_brand_tier", "name": "品牌等级", "direction": "discrete", "data_source": "knowledge_base",
+           "lookup": {"S": 93, "A": 80, "B": 60, "C": 35}},
+          {"id": "d2_market_share", "name": "市场份额排名", "direction": "higher_better"}
+        ]
+      },
+      "品牌财务": {
+        "weight_pct": 30,
+        "indicators": [
+          {"id": "d2_gross_margin", "name": "毛利率", "direction": "higher_better", "data_source": "ifind_stock", "listed_only": true},
+          {"id": "d2_cashflow_ratio", "name": "经营现金流/营收", "direction": "higher_better", "data_source": "ifind_stock", "listed_only": true}
+        ]
+      },
+      "创新口碑": {
+        "weight_pct": 20,
+        "indicators": [
+          {"id": "d2_patent_count", "name": "专利数量", "direction": "higher_better", "data_source": "qcc_ipr"},
+          {"id": "d2_public_sentiment", "name": "舆情", "direction": "discrete", "data_source": "qcc_risk",
+           "lookup": {"正面为主": 90, "中性": 60, "有负面但可控": 35, "重大负面": 0}},
+          {"id": "d2_rd_intensity", "name": "研发强度", "direction": "higher_better", "data_source": "ifind_stock", "listed_only": true}
+        ]
+      }
+    }
+  },
+
+  "dimension_3": {
+    "name": "核企自身信用",
+    "weight_pct": 40,
+    "sub_dimensions": {
+      "工商基本面": {
+        "weight_pct": 25,
+        "indicators": [
+          {"id": "d3_registered_capital", "name": "注册资本", "direction": "higher_better", "data_source": "qcc_company", "benchmark_method": "peer_percentile"},
+          {"id": "d3_paid_capital_ratio", "name": "实缴比例", "direction": "higher_better", "data_source": "qcc_company", "benchmark_method": "direct"},
+          {"id": "d3_establishment_years", "name": "成立年限", "direction": "higher_better", "data_source": "qcc_company", "benchmark_method": "direct"},
+          {"id": "d3_insured_count", "name": "参保人数", "direction": "higher_better", "data_source": "qcc_company", "benchmark_method": "peer_percentile"}
+        ]
+      },
+      "经营活跃度": {
+        "weight_pct": 25,
+        "indicators": [
+          {"id": "d3_bidding_count", "name": "招投标中标数", "direction": "higher_better", "data_source": "qcc_operation"},
+          {"id": "d3_tax_rating", "name": "纳税评级", "direction": "discrete", "data_source": "qcc_operation",
+           "lookup": {"A": 100, "B": 70, "C": 40, "D": 10}},
+          {"id": "d3_patent_count", "name": "专利/软著", "direction": "higher_better", "data_source": "qcc_ipr"}
+        ]
+      },
+      "财务健康度": {
+        "weight_pct": 25,
+        "indicators_listed": [
+          {"id": "d3_revenue", "name": "营业收入", "direction": "higher_better", "data_source": "ifind_stock"},
+          {"id": "d3_net_profit", "name": "归母净利润", "direction": "higher_better", "data_source": "ifind_stock"},
+          {"id": "d3_debt_ratio", "name": "资产负债率", "direction": "sweet_spot", "sweet_spot": {"min": 40, "max": 60}},
+          {"id": "d3_operating_cashflow", "name": "经营性现金流", "direction": "higher_better", "data_source": "ifind_stock"},
+          {"id": "d3_guarantee_ratio", "name": "对外担保/净资产", "direction": "lower_better", "data_source": "ifind_stock"}
+        ],
+        "indicators_unlisted": [
+          {"id": "d3_proxy_tax", "name": "纳税额(代理营收)", "weight": 0.4},
+          {"id": "d3_proxy_insured", "name": "参保人数(代理利润)", "weight": 0.3},
+          {"id": "d3_proxy_bidding", "name": "招投标(代理现金流)", "weight": 0.3}
+        ]
+      },
+      "司法信用红线": {"weight_pct": 25}
+    }
+  },
+
+  "dimension_4": {
+    "name": "经销商体系健康度",
+    "weight_pct": 30,
+    "sub_dimensions": {
+      "规模结构": {"weight_pct": 25},
+      "体系健康": {"weight_pct": 40},
+      "集中度": {"weight_pct": 35}
+    },
+    "related_party_check": true
+  },
+
+  "data_vintage_target": {
+    "company_financials": "2025年报/2026Q1",
+    "industry_benchmark_ratios": "2024年度全行业均值（EDB最新可用）",
+    "industry_benchmark_monthly": "2025年度月度指标",
+    "qcc_data": "实时"
+  }
+}

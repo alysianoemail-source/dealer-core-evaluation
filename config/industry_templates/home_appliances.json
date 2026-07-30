@@ -1,0 +1,376 @@
+{
+  "version": "v1.0",
+  "last_updated": "2026-07-26",
+  "industry": {
+    "name": "家用电器",
+    "sw_level1": "家用电器",
+    "sw_level2": "白色家电",
+    "edb_industry": "家用电器",
+    "edb_broad_industry": "电气机械和器材",
+    "peer_search_query": "申万家用电器行业上市公司",
+    "peer_count_listed": 88,
+    "peer_count_all": 37419
+  },
+
+  "dimension_1": {
+    "name": "行业景气",
+    "weight_pct": 15,
+    "description": "家电行业2025年以旧换新政策拉动明显，行业营收增速转正至+6.4%。空调三强格局稳定(美的29%/格力17%/海尔15%)，铜价趋稳成本端可控。",
+
+    "sub_dimensions": {
+      "基本面": {
+        "weight_pct": 50,
+        "indicators": [
+          {
+            "id": "d1_revenue_growth",
+            "name": "营收增速",
+            "direction": "higher_better",
+            "data_source": "ifind_stock",
+            "ifind_query": "{company}2025年报的营业收入同比增长率",
+            "benchmark_source": "ifind_edb",
+            "benchmark_edb_query": "电气机械和器材制造业:营业收入:累计同比增长 2025",
+            "benchmark_value_2025": 6.4,
+            "benchmark_vintage": "2025年度",
+            "unit": "%",
+            "note": "格力2025营收-9.9%，严重跑输行业+6.4%"
+          },
+          {
+            "id": "d1_roe",
+            "name": "ROE（净资产收益率）",
+            "direction": "higher_better",
+            "data_source": "ifind_stock",
+            "ifind_query": "{company}2025年报的净资产收益率ROE",
+            "benchmark_source": "ifind_edb",
+            "benchmark_edb_query": "家用电器制造业:净资产收益率:全行业平均值",
+            "benchmark_value_2024": 3.2,
+            "benchmark_vintage": "2024年度（全行业均值最新可用）",
+            "unit": "%",
+            "note": "全行业均值仅3.2%，上市公司远超此水平"
+          },
+          {
+            "id": "d1_profit_margin",
+            "name": "销售利润率",
+            "direction": "higher_better",
+            "data_source": "ifind_stock",
+            "ifind_query": "{company}2025年报的销售毛利率",
+            "benchmark_source": "ifind_edb",
+            "benchmark_edb_query": "家用电器制造业:销售利润率:全行业平均值",
+            "benchmark_value_2024": 2.0,
+            "benchmark_vintage": "2024年度（全行业均值最新可用）",
+            "unit": "%"
+          },
+          {
+            "id": "d1_inventory_turnover",
+            "name": "存货周转率",
+            "direction": "higher_better",
+            "data_source": "ifind_stock",
+            "ifind_query": "{company}2025年报的存货周转率",
+            "benchmark_source": "ifind_edb",
+            "benchmark_edb_query": "家用电器制造业:存货周转率:全行业平均值",
+            "benchmark_value_2024": 6.6,
+            "benchmark_vintage": "2024年度（全行业均值最新可用）",
+            "unit": "次"
+          },
+          {
+            "id": "d1_asset_return",
+            "name": "总资产报酬率",
+            "direction": "higher_better",
+            "data_source": "ifind_stock",
+            "ifind_query": "{company}2025年报的总资产报酬率",
+            "benchmark_source": "ifind_edb",
+            "benchmark_edb_query": "家用电器制造业:总资产报酬率:全行业平均值",
+            "benchmark_value_2024": 2.3,
+            "benchmark_vintage": "2024年度（全行业均值最新可用）",
+            "unit": "%"
+          },
+          {
+            "id": "d1_debt_ratio",
+            "name": "资产负债率",
+            "direction": "sweet_spot",
+            "sweet_spot": {"min": 40, "max": 60},
+            "data_source": "ifind_stock",
+            "ifind_query": "{company}2025年报的资产负债率",
+            "benchmark_source": "ifind_edb",
+            "benchmark_edb_query": "家用电器制造业:资产负债率:全行业平均值",
+            "benchmark_value_2024": 59.3,
+            "benchmark_vintage": "2024年度（全行业均值最新可用）",
+            "unit": "%",
+            "note": "适中最优40-60%。家电行业均值59.3%接近上限。格力61.7%略超最优区间。"
+          }
+        ]
+      },
+
+      "量价领先": {
+        "weight_pct": 30,
+        "indicators": [
+          {
+            "id": "d1_aircon_shipment",
+            "name": "空调出货量趋势",
+            "direction": "higher_better",
+            "data_source": "ifind_edb",
+            "edb_query": "空调产量当月值 2025-2026",
+            "benchmark_method": "trend_judgment",
+            "unit": "定性+定量",
+            "note": "量：空调出货量同比趋势。线上增、线下稳、结构分化。"
+          },
+          {
+            "id": "d1_raw_material_price",
+            "name": "原材料价格趋势",
+            "direction": "lower_better",
+            "data_source": "ifind_edb",
+            "edb_query": "铜现货价格 2025-2026",
+            "benchmark_method": "trend_judgment",
+            "unit": "定性+定量",
+            "note": "价：铜/钢价走势。2025年铜价趋稳，成本端压力可控。"
+          },
+          {
+            "id": "d1_retail_sales",
+            "name": "社零家电类增速",
+            "direction": "higher_better",
+            "data_source": "ifind_edb",
+            "edb_query": "家用电器和音像器材类商品零售额累计同比增长 2025-2026",
+            "benchmark_method": "direct_value",
+            "unit": "%",
+            "note": "终端需求：社零口径家电零售增速。以旧换新政策拉动明显。"
+          }
+        ],
+        "price_volume_adjustment": {
+          "_description": "量价同看修正：根据出货量方向+原材料价格方向的组合，对量价领先子维度分数做一次性修正",
+          "rules": {
+            "volume_up_price_up":   {"adjustment": 3,  "narrative": "量价齐升=需求拉动型景气"},
+            "volume_up_price_down": {"adjustment": -2, "narrative": "量涨价跌=降价促销换量"},
+            "volume_down_price_up": {"adjustment": -2, "narrative": "量缩价涨=成本推动型萎缩"},
+            "volume_down_price_down": {"adjustment": -8, "narrative": "量价齐跌=需求萎缩"}
+          }
+        }
+      },
+
+      "市场预期": {
+        "weight_pct": 20,
+        "indicators": [
+          {
+            "id": "d1_excess_return",
+            "name": "超额收益(vs沪深300)",
+            "direction": "higher_better",
+            "data_source": "ifind_stock",
+            "ifind_query": "{company}近1年涨跌幅 vs 沪深300近1年涨跌幅",
+            "benchmark_method": "direct_comparison",
+            "unit": "%"
+          },
+          {
+            "id": "d1_pe_percentile",
+            "name": "PE分位(5年)",
+            "direction": "lower_better",
+            "data_source": "ifind_stock",
+            "ifind_query": "{company}当前PE在近5年的分位数",
+            "benchmark_method": "percentile_rank",
+            "unit": "分位",
+            "note": "越低越好=越低估。家电龙头PE长期8-15倍，当前历史低位~8倍=高安全边际。"
+          },
+          {
+            "id": "d1_analyst_sentiment",
+            "name": "研报调整方向",
+            "direction": "higher_better",
+            "data_source": "ifind_news",
+            "ifind_query": "{company}近6个月研报评级调整",
+            "benchmark_method": "discrete",
+            "lookup": {
+              "多数上调": 85,
+              "中性偏正面": 70,
+              "多数维持": 60,
+              "中性偏负面": 40,
+              "多数下调": 20
+            },
+            "unit": "定性"
+          }
+        ]
+      },
+
+      "外生调整": {
+        "weight_pct": 0,
+        "max_adjustment": 10,
+        "description": "政策补贴等外部因素，±10分封顶，必须可追溯来源",
+        "triggers": [
+          {
+            "name": "以旧换新/节能补贴",
+            "adjustment": 5,
+            "condition": "国家或地方层面有明确的以旧换新/节能补贴政策落地",
+            "source_required": "国务院/商务部/地方政府正式文件"
+          },
+          {
+            "name": "出口退税调整",
+            "adjustment": 4,
+            "condition": "出口退税率上调利好家电出口",
+            "source_required": "财政部/税务总局公告"
+          },
+          {
+            "name": "贸易壁垒/关税",
+            "adjustment": -5,
+            "condition": "主要出口市场加征关税或设置贸易壁垒",
+            "source_required": "商务部/海关总署公告或国际官方渠道"
+          }
+        ]
+      }
+    }
+  },
+
+  "dimension_2": {
+    "name": "品牌竞争力",
+    "weight_pct": 15,
+    "description": "通用维度，跨行业逻辑一致。品牌等级S/A/B/C + 财务数据 + 创新口碑。",
+
+    "sub_dimensions": {
+      "市场地位": {
+        "weight_pct": 50,
+        "indicators": [
+          {
+            "id": "d2_brand_tier",
+            "name": "品牌等级",
+            "direction": "discrete",
+            "data_source": "knowledge_base",
+            "lookup": {"S": 93, "A": 80, "B": 60, "C": 35},
+            "special_rules": [
+              "无品牌授权 → 封顶30分",
+              "假冒品牌 → 整个D2归零"
+            ]
+          },
+          {
+            "id": "d2_market_share",
+            "name": "市场份额排名",
+            "direction": "higher_better",
+            "data_source": "web_search",
+            "benchmark_method": "percentile_in_listed_peers",
+            "note": "格力空调全渠道17%排第2，线上24%排第1，中央空调>15%连续14年第1"
+          }
+        ]
+      },
+
+      "品牌财务": {
+        "weight_pct": 30,
+        "_listed_vs_unlisted": "见scoring_weights.json unlisted_proxy_rules",
+        "indicators": [
+          {
+            "id": "d2_gross_margin",
+            "name": "毛利率",
+            "direction": "higher_better",
+            "data_source": "ifind_stock",
+            "ifind_query": "{company}2025年报的销售毛利率",
+            "benchmark_source": "ifind_edb",
+            "benchmark_edb_query": "{industry}制造业:销售利润率:全行业平均值",
+            "listed_only": true
+          },
+          {
+            "id": "d2_cashflow_ratio",
+            "name": "经营现金流/营收",
+            "direction": "higher_better",
+            "data_source": "ifind_stock",
+            "ifind_query": "{company}2025年报的经营活动现金流量净额、营业收入",
+            "compute": "经营现金流/营业收入",
+            "listed_only": true
+          }
+        ]
+      },
+
+      "创新口碑": {
+        "weight_pct": 20,
+        "indicators": [
+          {
+            "id": "d2_patent_count",
+            "name": "专利数量",
+            "direction": "higher_better",
+            "data_source": "qcc_ipr",
+            "unit": "件"
+          },
+          {
+            "id": "d2_public_sentiment",
+            "name": "舆情",
+            "direction": "higher_better",
+            "data_source": "qcc_risk",
+            "benchmark_method": "discrete",
+            "lookup": {"正面为主": 90, "中性": 60, "有负面但可控": 35, "重大负面": 0}
+          },
+          {
+            "id": "d2_rd_intensity",
+            "name": "研发强度",
+            "direction": "higher_better",
+            "data_source": "ifind_stock",
+            "ifind_query": "{company}2025年报的研发费用、营业收入",
+            "compute": "研发费用/营业收入",
+            "listed_only": true
+          }
+        ]
+      }
+    }
+  },
+
+  "dimension_3": {
+    "name": "核企自身信用",
+    "weight_pct": 40,
+    "description": "通用维度，跨行业逻辑一致。数据源：iFinD(财务)+QCC(工商/司法/经营)。",
+
+    "sub_dimensions": {
+      "工商基本面": {
+        "weight_pct": 25,
+        "indicators": [
+          {"id": "d3_registered_capital", "name": "注册资本", "direction": "higher_better", "data_source": "qcc_company", "benchmark_method": "peer_percentile"},
+          {"id": "d3_paid_capital_ratio", "name": "实缴比例", "direction": "higher_better", "data_source": "qcc_company", "benchmark_method": "direct", "note": "100%=100分，0%=0分，线性"},
+          {"id": "d3_establishment_years", "name": "成立年限", "direction": "higher_better", "data_source": "qcc_company", "benchmark_method": "direct", "note": "≥20年=100，≥10=80，≥5=60，≥3=40，<3=20"},
+          {"id": "d3_insured_count", "name": "参保人数", "direction": "higher_better", "data_source": "qcc_company", "benchmark_method": "peer_percentile"}
+        ]
+      },
+
+      "经营活跃度": {
+        "weight_pct": 25,
+        "indicators": [
+          {"id": "d3_bidding_count", "name": "招投标中标数", "direction": "higher_better", "data_source": "qcc_operation"},
+          {"id": "d3_tax_rating", "name": "纳税评级", "direction": "discrete", "data_source": "qcc_operation", "lookup": {"A": 100, "B": 70, "C": 40, "D": 10}, "bonus": "连续A级≥5年每年+0.5，上限+10"},
+          {"id": "d3_patent_count", "name": "专利/软著", "direction": "higher_better", "data_source": "qcc_ipr"}
+        ]
+      },
+
+      "财务健康度": {
+        "weight_pct": 25,
+        "_listed_vs_unlisted": "见scoring_weights.json unlisted_proxy_rules",
+        "indicators_listed": [
+          {"id": "d3_revenue", "name": "营业收入", "direction": "higher_better", "data_source": "ifind_stock", "ifind_query": "{company}2025年报的营业收入"},
+          {"id": "d3_net_profit", "name": "归母净利润", "direction": "higher_better", "data_source": "ifind_stock", "ifind_query": "{company}2025年报的归属母公司净利润"},
+          {"id": "d3_debt_ratio", "name": "资产负债率", "direction": "sweet_spot", "sweet_spot": {"min": 40, "max": 60}, "data_source": "ifind_stock"},
+          {"id": "d3_operating_cashflow", "name": "经营性现金流", "direction": "higher_better", "data_source": "ifind_stock"},
+          {"id": "d3_guarantee_ratio", "name": "对外担保/净资产", "direction": "lower_better", "data_source": "ifind_stock"}
+        ],
+        "indicators_unlisted": [
+          {"id": "d3_proxy_tax", "name": "纳税额(代理营收)", "weight": 0.4},
+          {"id": "d3_proxy_insured", "name": "参保人数(代理利润)", "weight": 0.3},
+          {"id": "d3_proxy_bidding", "name": "招投标(代理现金流)", "weight": 0.3}
+        ]
+      },
+
+      "司法信用红线": {
+        "weight_pct": 25,
+        "description": "6条红线逐项检查，任一触发→D3归零→评级D。非上市满分85（vs上市100）。"
+      }
+    }
+  },
+
+  "dimension_4": {
+    "name": "经销商体系健康度",
+    "weight_pct": 30,
+    "description": "通用框架。对具体经销商进行评价，数据来自QCC。",
+    "sub_dimensions": {
+      "规模结构": {"weight_pct": 25},
+      "体系健康": {"weight_pct": 40},
+      "集中度": {"weight_pct": 35}
+    },
+    "related_party_check": {
+      "description": "关联自融排查：4项检查（股权穿透/实控人重合/高管重合/经销商间关联），触发扣15-20分"
+    }
+  },
+
+  "data_vintage_target": {
+    "_description": "各维度的目标数据年份",
+    "company_financials": "2025年报（或2026Q1为最新季度参考）",
+    "industry_benchmark_ratios": "2024年度全行业均值（EDB最新可用）",
+    "industry_benchmark_monthly": "2025年度月度指标",
+    "qcc_data": "实时"
+  }
+}

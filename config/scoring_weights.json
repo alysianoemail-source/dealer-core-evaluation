@@ -1,0 +1,139 @@
+{
+  "version": "v1.0",
+  "last_updated": "2026-07-26",
+  "maintainer": "[待指定]",
+  "change_log": "v1.0: 评分逻辑从绝对值阈值改为行业基准比率。比率→分数映射见scoring_thresholds.json，行业模板见industry_templates/。EDB指标映射见edb_indicator_map.json。",
+  "scoring_method": "ratio_to_industry_benchmark",
+  "data_vintage_target": {
+    "company_financials": "2025年报 / 2026Q1(最新季度)",
+    "industry_benchmark_structural": "2024年度全行业平均值（EDB最新可用，结构比率年际稳定）",
+    "industry_benchmark_monthly": "2025年度月度频率指标",
+    "qcc_data": "实时/准实时",
+    "note": "全行业统计数据有12-18个月发布滞后，2025年全行业均值尚未发布属正常现象"
+  },
+  "weights": {
+    "dimension_1": {
+      "name": "行业景气",
+      "weight_pct": 15,
+      "layers": [
+        { "name": "基本面", "weight_pct": 50, "indicators": ["营收增速", "净利增速", "毛利率行业分位", "ROE", "存货周转率", "资产负债率"] },
+        { "name": "量价领先", "weight_pct": 30, "indicators": ["手机出货同比", "DRAM现货价", "社零通讯器材"] },
+        { "name": "市场预期", "weight_pct": 20, "indicators": ["超额收益vs沪深300", "PE分位5年", "研报调整"] }
+      ],
+      "external_adjustment_max": 10
+    },
+    "dimension_2": {
+      "name": "品牌竞争力",
+      "weight_pct": 15,
+      "sub_dimensions": [
+        { "name": "市场地位", "weight_pct": 50 },
+        { "name": "品牌财务", "weight_pct": 30 },
+        { "name": "创新口碑", "weight_pct": 20 }
+      ]
+    },
+    "dimension_3": {
+      "name": "核企自身信用",
+      "weight_pct": 40,
+      "sub_dimensions": [
+        { "name": "工商基本面", "weight_pct": 25, "items": ["注册资本", "实缴资本", "成立年限", "参保人数"] },
+        { "name": "经营活跃度", "weight_pct": 25, "items": ["招投标/中标", "纳税评级", "专利/软著"] },
+        { "name": "财务健康度", "weight_pct": 25 },
+        { "name": "司法信用红线", "weight_pct": 25, "note": "一票否决制，触发则全维度归零" }
+      ],
+      "redline_override": true
+    },
+    "dimension_4": {
+      "name": "经销商体系健康度",
+      "weight_pct": 30,
+      "sub_dimensions": [
+        { "name": "规模结构", "weight_pct": 25, "items": ["经销商总数", "层级数", "区域覆盖"] },
+        { "name": "体系健康", "weight_pct": 40, "items": ["异常/注销比例", "成立年限中位数", "参保人数中位数"] },
+        { "name": "集中度", "weight_pct": 35, "items": ["前1经销商占比", "前3经销商占比", "单区域集中度"] }
+      ],
+      "related_party_check": true
+    }
+  },
+  "unlisted_proxy_rules": {
+    "_description": "非上市核企代理指标映射 + 降权系数。非上市企业无法获取公开财报，用纳税/参保/招投标等工商数据代理，整体乘以降权系数以减少信息不对称偏差。",
+
+    "dimension_2_brand_finance": {
+      "_description": "D2品牌财务子维度：上市vs非上市的数据源差异",
+      "listed": {
+        "data_sources": ["品牌毛利率(d2_gross_margin)", "经营现金流/营收(d2_cashflow_ratio)"],
+        "weights": [0.5, 0.5],
+        "discount_factor": 1.0,
+        "note": "上市公司财报数据，无需降权"
+      },
+      "unlisted": {
+        "data_sources": ["行业营收排名(d2_revenue_rank)", "纳税额(d3_proxy_tax)", "招投标活跃度(d3_proxy_bidding)"],
+        "weights": [0.4, 0.3, 0.3],
+        "discount_factor": 0.80,
+        "note": "非上市品牌无法获取财报，用行业排名+纳税+招投标代理，整体×0.80降权"
+      }
+    },
+
+    "dimension_3_financial_health": {
+      "_description": "D3财务健康度子维度：上市vs非上市的数据源差异",
+      "listed": {
+        "data_sources": ["营业收入(d3_revenue)", "归母净利润(d3_net_profit)", "资产负债率(d3_debt_ratio)", "经营性现金流(d3_operating_cashflow)", "对外担保/净资产(d3_guarantee_ratio)"],
+        "weights": [0.2, 0.2, 0.2, 0.2, 0.2],
+        "discount_factor": 1.0,
+        "note": "上市公司真实财报五指标等权平均"
+      },
+      "unlisted": {
+        "data_sources": ["纳税额(d3_proxy_tax)", "参保人数(d3_proxy_insured)", "招投标活跃度(d3_proxy_bidding)"],
+        "weights": [0.4, 0.3, 0.3],
+        "discount_factor": 0.85,
+        "note": "非上市核企无公开财报，用纳税(40%)+参保(30%)+招投标(30%)代理，整体×0.85降权"
+      }
+    },
+
+    "dimension_3_judicial_redline": {
+      "_description": "D3司法红线子维度：上市vs非上市的满分差异",
+      "listed_ceiling": 100,
+      "unlisted_ceiling": 85,
+      "note": "非上市公司信息披露确定性低于上市公司，即使红线全部确认未触发，满分仅85（vs上市公司100）"
+    },
+
+    "discount_rationale": {
+      "0.80_for_brand": "品牌财务维度降权系数。非上市品牌的行业排名、纳税、招投标数据只能间接反映财务实力，信息衰减较大。",
+      "0.85_for_credit": "核企信用维度降权系数。纳税+参保+招投标对真实财务状况的代理能力优于品牌维度，降权幅度略小。",
+      "85_ceiling_for_redline": "非上市企业的司法/行政处罚公开记录可能不如上市公司完整（部分处罚仅向特定部门报告），因此即使查无记录也不能给满分。"
+    }
+  },
+
+  "data_missing_rules": {
+    "_description": "数据缺失时的降级处理规则（与 data_collection_checklist.md §5 对齐）",
+
+    "single_indicator": {
+      "action": "impute_from_sibling_mean",
+      "description": "单个指标缺失时，取同子维度其他指标均值为插补值",
+      "max_missing_ratio": 0.5
+    },
+
+    "sub_dimension": {
+      "action": "redistribute_weight",
+      "description": "子维度多项指标缺失时，权重按比例分配给同维度其他子维度",
+      "min_sub_dimensions": 1
+    },
+
+    "entire_dimension": {
+      "action": "merge_to_d3",
+      "description": "整个维度数据不足时，其权重并入D3（核企自身信用）",
+      "exception": "D3自身数据<60%或红线未确认 → 转人工"
+    },
+
+    "d3_insufficient": {
+      "action": "transfer_to_human",
+      "condition": "D3可用数据项<60% 或 任一条红线无法双源确认",
+      "message": "核企自身信用数据不足，自动评级不可用，转人工处理"
+    }
+  },
+
+  "rating_map": {
+    "A": { "min": 80, "max": 100, "label": "优先准入" },
+    "B": { "min": 70, "max": 79, "label": "建议准入" },
+    "C": { "min": 60, "max": 69, "label": "有条件准入" },
+    "D": { "min": 0, "max": 59, "label": "不建议准入" }
+  }
+}

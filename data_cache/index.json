@@ -1,0 +1,29 @@
+{
+  "version": "v1.0",
+  "last_updated": "2026-07-29T15:30:00+08:00",
+  "description": "数据缓存总索引。每次读写缓存前检查此文件确认有效性和过期状态。",
+
+  "caches": {
+    "家用电器_benchmark": {
+      "file": "industry_benchmarks/家用电器.json",
+      "type": "industry_benchmark_annual",
+      "fetched_at": "2026-07-29T15:30:00+08:00",
+      "expires_at": "2027-01-29T00:00:00+08:00",
+      "source": "iFinD EDB",
+      "status": "valid",
+      "indicators_cached": ["资产负债率", "净资产收益率"],
+      "indicators_pending": ["销售利润率", "存货周转率", "总资产报酬率", "营收增速"]
+    },
+
+    "格力电器_2025_financials": {
+      "file": "company_financials/格力电器_2025.json",
+      "type": "company_financials_annual",
+      "fetched_at": "2026-07-29T15:30:00+08:00",
+      "expires_at": "2026-08-31T00:00:00+08:00",
+      "source": "iFinD stock.get_stock_financials",
+      "status": "valid",
+      "indicators_cached": ["营业收入", "归母净利润", "ROE", "资产负债率", "经营现金流净额", "净利同比", "营收同比"],
+      "notes": "2025年报。下次财报季（2026Q2中报约8月底）后需刷新。"
+    }
+  }
+}

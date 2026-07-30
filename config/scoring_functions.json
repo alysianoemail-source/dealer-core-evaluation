@@ -1,0 +1,840 @@
+{
+  "version": "v0.2",
+  "last_updated": "2026-07-26",
+  "description": "经销商核企测评 — 全量指标评分函数配置。每个指标定义原始值→0-100分的映射规则，基于商业银行供应链金融风控逻辑设计。",
+
+  "_design_principles": {
+    "1": "每个指标独立评分，用线性插值在阈值断点间平滑过渡",
+    "2": "行业差异通过 industry_profiles 覆盖默认阈值实现",
+    "3": "非上市企业财务数据用代理指标+降权系数替代",
+    "4": "所有阈值基于业务逻辑设计（非统计回归），需持续迭代校准",
+    "5": "离散型指标（纳税评级等）用 lookup 表，不走插值"
+  },
+
+  "industry_profiles": {
+    "consumer_electronics": {
+      "name": "消费电子",
+      "lifecycle": "growth_to_mature",
+      "revenue_growth_thresholds": [15, 90, 10, 80, 5, 65, 0, 45, -5, 25],
+      "inventory_turnover_thresholds": [8, 90, 6, 80, 4, 65, 2, 45, 1, 25],
+      "gross_margin_typical": "15-30%"
+    },
+    "home_appliances": {
+      "name": "家用电器",
+      "lifecycle": "mature",
+      "revenue_growth_thresholds": [10, 90, 5, 80, 0, 65, -5, 45, -10, 25],
+      "inventory_turnover_thresholds": [6, 90, 4, 75, 3, 60, 2, 40, 1, 20],
+      "gross_margin_typical": "25-35%"
+    },
+    "new_energy": {
+      "name": "新能源",
+      "lifecycle": "growth",
+      "revenue_growth_thresholds": [25, 95, 15, 85, 10, 75, 5, 55, 0, 35],
+      "inventory_turnover_thresholds": [5, 85, 4, 75, 3, 60, 2, 45, 1, 25],
+      "gross_margin_typical": "20-40%"
+    }
+  },
+
+  "indicators": {
+    "d1_fundamental": {
+      "_description": "维度一·基本面指标（行业级别数据）",
+
+      "d1_revenue_growth": {
+        "id": "d1_revenue_growth",
+        "name": "行业营收增速",
+        "dimension": "D1",
+        "sub_dimension": "基本面",
+        "unit": "%",
+        "direction": "higher_better",
+        "description": "行业整体营收同比增速。增速越高说明行业景气越好。不同行业生命周期对应不同阈值。",
+        "default_thresholds": [
+          [15, 100], [10, 90], [5, 80], [0, 65], [-5, 45], [-10, 25], [-20, 10]
+        ],
+        "industry_overrides": {
+          "home_appliances": [[10, 100], [5, 90], [0, 75], [-5, 55], [-10, 35], [-15, 15]],
+          "new_energy": [[25, 100], [15, 90], [10, 80], [5, 60], [0, 40], [-5, 20]]
+        }
+      },
+
+      "d1_profit_growth": {
+        "id": "d1_profit_growth",
+        "name": "行业净利增速",
+        "dimension": "D1",
+        "sub_dimension": "基本面",
+        "unit": "%",
+        "direction": "higher_better",
+        "description": "行业整体净利润同比增速。比营收增速更敏感，利润转负是行业衰退强信号。",
+        "default_thresholds": [
+          [20, 100], [15, 90], [10, 80], [5, 65], [0, 45], [-5, 25], [-10, 10]
+        ],
+        "industry_overrides": {
+          "home_appliances": [[15, 100], [10, 90], [5, 75], [0, 55], [-5, 35], [-10, 15]],
+          "new_energy": [[30, 100], [20, 90], [10, 75], [5, 55], [0, 35], [-5, 15]]
+        }
+      },
+
+      "d1_gross_margin_percentile": {
+        "id": "d1_gross_margin_percentile",
+        "name": "毛利率行业分位",
+        "dimension": "D1",
+        "sub_dimension": "基本面",
+        "unit": "分位数",
+        "direction": "higher_better",
+        "description": "毛利率在行业内的分位水平（取值0-100）。分位越高说明成本控制/议价能力越强。",
+        "default_thresholds": [
+          [90, 100], [75, 90], [50, 75], [25, 60], [10, 40], [0, 20]
+        ]
+      },
+
+      "d1_roe": {
+        "id": "d1_roe",
+        "name": "行业ROE",
+        "dimension": "D1",
+        "sub_dimension": "基本面",
+        "unit": "%",
+        "direction": "higher_better",
+        "description": "行业平均净资产收益率。ROE越高说明资本回报效率越好。",
+        "default_thresholds": [
+          [25, 100], [20, 95], [15, 85], [10, 70], [5, 50], [0, 30], [-5, 10]
+        ],
+        "industry_overrides": {
+          "home_appliances": [[20, 100], [15, 90], [10, 75], [5, 55], [0, 35], [-5, 15]]
+        }
+      },
+
+      "d1_inventory_turnover": {
+        "id": "d1_inventory_turnover",
+        "name": "存货周转率",
+        "dimension": "D1",
+        "sub_dimension": "基本面",
+        "unit": "次/年",
+        "direction": "higher_better",
+        "description": "行业平均存货周转次数。周转越快说明产品动销越好，库存积压风险越低。",
+        "default_thresholds": [
+          [10, 100], [8, 90], [6, 80], [4, 65], [2, 45], [1, 25], [0, 10]
+        ],
+        "industry_overrides": {
+          "home_appliances": [[8, 100], [6, 90], [4, 75], [3, 60], [2, 40], [1, 20], [0, 10]],
+          "new_energy": [[6, 100], [5, 90], [4, 75], [3, 60], [2, 40], [1, 20], [0, 10]]
+        }
+      },
+
+      "d1_debt_ratio": {
+        "id": "d1_debt_ratio",
+        "name": "行业资产负债率",
+        "dimension": "D1",
+        "sub_dimension": "基本面",
+        "unit": "%",
+        "direction": "sweet_spot",
+        "sweet_spot": [40, 50],
+        "description": "行业平均资产负债率。40-50%为制造业最优区间：杠杆适中，偿债压力可控。偏高→过度负债风险，偏低→资产利用效率不足。",
+        "default_thresholds": [
+          [40, 100], [50, 100], [30, 90], [60, 90], [20, 75], [70, 75], [10, 50], [80, 50], [0, 25], [100, 25]
+        ]
+      }
+    },
+
+    "d1_price_volume": {
+      "_description": "维度一·量价领先指标",
+
+      "d1_shipment_yoy": {
+        "id": "d1_shipment_yoy",
+        "name": "品类出货量同比",
+        "dimension": "D1",
+        "sub_dimension": "量价领先",
+        "unit": "%",
+        "direction": "higher_better",
+        "description": "行业主要产品出货量同比增速。正增长→需求扩张，负增长→需求萎缩。",
+        "default_thresholds": [
+          [20, 100], [15, 90], [10, 80], [5, 65], [0, 50], [-5, 30], [-10, 15]
+        ]
+      },
+
+      "d1_raw_material_price": {
+        "id": "d1_raw_material_price",
+        "name": "原材料价格同比",
+        "dimension": "D1",
+        "sub_dimension": "量价领先",
+        "unit": "%",
+        "direction": "custom",
+        "description": "核心原材料价格同比变动。温和上涨→需求拉动（正面），剧烈上涨→成本压力（负面），持续下跌→需求萎缩（负面）。配合出货量做量价同看修正。",
+        "default_thresholds": [
+          [10, 100], [5, 90], [3, 85], [0, 75], [-3, 60], [-5, 40], [-10, 20]
+        ]
+      },
+
+      "d1_retail_sales": {
+        "id": "d1_retail_sales",
+        "name": "社零品类增速",
+        "dimension": "D1",
+        "sub_dimension": "量价领先",
+        "unit": "%",
+        "direction": "higher_better",
+        "description": "社会消费品零售总额中对应品类的同比增速。反映终端消费需求热度。",
+        "default_thresholds": [
+          [15, 100], [10, 90], [5, 80], [0, 65], [-5, 45], [-10, 25]
+        ]
+      },
+
+      "_price_volume_adjustment": {
+        "description": "量价同看修正规则：先对3个量价指标独立打分+等权平均，再根据量价方向对整体做一次性修正（非逐指标修正）。",
+        "rules": {
+          "volume_up_price_up": { "label": "需求拉动上行", "adjustment": 3, "per_indicator": false },
+          "volume_up_price_down": { "label": "供给扩张(量增价跌)", "adjustment": -2, "per_indicator": false },
+          "volume_down_price_up": { "label": "供给收缩(量跌价涨)", "adjustment": -2, "per_indicator": false },
+          "volume_down_price_down": { "label": "需求萎缩下行", "adjustment": -8, "per_indicator": false }
+        }
+      }
+    },
+
+    "d1_market_expectation": {
+      "_description": "维度一·市场预期指标",
+
+      "d1_excess_return": {
+        "id": "d1_excess_return",
+        "name": "超额收益vs沪深300",
+        "dimension": "D1",
+        "sub_dimension": "市场预期",
+        "unit": "%",
+        "direction": "higher_better",
+        "description": "行业指数相对沪深300的超额收益。正值→市场看好该行业，负值→跑输大盘。",
+        "default_thresholds": [
+          [20, 100], [10, 90], [5, 80], [0, 70], [-5, 50], [-10, 30], [-20, 10]
+        ]
+      },
+
+      "d1_pe_percentile": {
+        "id": "d1_pe_percentile",
+        "name": "PE分位(5年)",
+        "dimension": "D1",
+        "sub_dimension": "市场预期",
+        "unit": "分位数",
+        "direction": "lower_better",
+        "description": "当前PE在近5年中的分位。低分位=估值偏低=安全边际高=高分；高分位=估值偏高=回调风险=低分。",
+        "default_thresholds": [
+          [5, 100], [10, 95], [20, 85], [30, 75], [50, 60], [70, 45], [85, 30], [95, 15]
+        ]
+      },
+
+      "d1_analyst_sentiment": {
+        "id": "d1_analyst_sentiment",
+        "name": "研报调整方向",
+        "dimension": "D1",
+        "sub_dimension": "市场预期",
+        "unit": "定性",
+        "direction": "discrete",
+        "description": "最近一季度券商研报的整体调整方向。汇总上调/维持/下调的比例判断。",
+        "lookup": {
+          "强正面": 100,
+          "偏正面": 75,
+          "中性": 55,
+          "偏负面": 35,
+          "强负面": 15
+        }
+      }
+    },
+
+    "d2_market_position": {
+      "_description": "维度二·市场地位指标",
+
+      "d2_brand_tier_score": {
+        "id": "d2_brand_tier_score",
+        "name": "品牌等级基础分",
+        "dimension": "D2",
+        "sub_dimension": "市场地位",
+        "unit": "等级",
+        "direction": "discrete",
+        "description": "基于品牌分级库(S/A/B/C)的基础分，叠加市场份额微调。",
+        "base_scores": {
+          "S": 93,
+          "A": 80,
+          "B": 60,
+          "C": 35
+        },
+        "share_adjustment": {
+          "S": { "threshold": 20, "above": 5, "below_15": -5 },
+          "A": { "threshold": 8, "above": 5, "below_3": -5 },
+          "B": { "threshold": 3, "above": 5, "below_1": -5 },
+          "C": { "above_1": 5, "default": 0 }
+        },
+        "special_rules": {
+          "no_authorization": { "cap": 30, "note": "无品牌授权，品牌维度上限30分" },
+          "fake_brand": { "score": 0, "note": "假冒品牌，一票否决" },
+          "auth_expiring_soon": { "deduction": -10, "note": "授权<3个月到期，扣10分" }
+        }
+      }
+    },
+
+    "d2_brand_finance": {
+      "_description": "维度二·品牌财务指标",
+
+      "d2_revenue_rank": {
+        "id": "d2_revenue_rank",
+        "name": "行业营收排名",
+        "dimension": "D2",
+        "sub_dimension": "品牌财务",
+        "unit": "排名",
+        "direction": "lower_better",
+        "description": "品牌在行业内的营收排名。用于非上市品牌的代理评分。",
+        "default_thresholds": [
+          [1, 100], [2, 95], [3, 90], [5, 80], [10, 65], [20, 45], [50, 25]
+        ]
+      },
+
+      "d2_gross_margin": {
+        "id": "d2_gross_margin",
+        "name": "品牌毛利率",
+        "dimension": "D2",
+        "sub_dimension": "品牌财务",
+        "unit": "%",
+        "direction": "higher_better",
+        "description": "品牌毛利率。高毛利率=强品牌溢价。",
+        "default_thresholds": [
+          [40, 100], [30, 90], [20, 75], [15, 60], [10, 40], [5, 20]
+        ],
+        "industry_overrides": {
+          "consumer_electronics": [[30, 100], [25, 90], [20, 80], [15, 60], [10, 40], [5, 20]],
+          "home_appliances": [[35, 100], [30, 90], [25, 80], [20, 65], [15, 50], [10, 30]]
+        }
+      },
+
+      "d2_cashflow_ratio": {
+        "id": "d2_cashflow_ratio",
+        "name": "经营现金流/营收",
+        "dimension": "D2",
+        "sub_dimension": "品牌财务",
+        "unit": "%",
+        "direction": "higher_better",
+        "description": "经营现金流占营收比例。反映品牌回款质量和盈利现金含量。",
+        "default_thresholds": [
+          [20, 100], [15, 90], [10, 80], [5, 65], [0, 45], [-5, 20]
+        ]
+      }
+    },
+
+    "d2_innovation": {
+      "_description": "维度二·创新口碑指标",
+
+      "d2_patent_count": {
+        "id": "d2_patent_count",
+        "name": "专利/软著数量",
+        "dimension": "D2",
+        "sub_dimension": "创新口碑",
+        "unit": "件",
+        "direction": "higher_better",
+        "description": "品牌持有专利总数（含发明/实用新型/外观设计）。反映技术护城河。",
+        "default_thresholds": [
+          [50000, 100], [10000, 95], [5000, 90], [1000, 80], [500, 70], [100, 55], [10, 35], [0, 15]
+        ]
+      },
+
+      "d2_public_sentiment": {
+        "id": "d2_public_sentiment",
+        "name": "近180天舆情",
+        "dimension": "D2",
+        "sub_dimension": "创新口碑",
+        "unit": "定性",
+        "direction": "discrete",
+        "description": "近180天品牌舆情整体倾向。综合重大事件、媒体评价、消费者反馈。",
+        "lookup": {
+          "正面为主，无重大负面": 90,
+          "正面偏多，偶有小负面": 80,
+          "中性": 65,
+          "偶有负面事件": 40,
+          "重大负面事件": 15
+        }
+      },
+
+      "d2_rd_intensity": {
+        "id": "d2_rd_intensity",
+        "name": "研发投入强度",
+        "dimension": "D2",
+        "sub_dimension": "创新口碑",
+        "unit": "%",
+        "direction": "higher_better",
+        "description": "研发费用占营收比例。反映品牌持续创新投入意愿。",
+        "default_thresholds": [
+          [10, 100], [7, 95], [5, 85], [3, 70], [1, 45], [0, 20]
+        ],
+        "industry_overrides": {
+          "home_appliances": [[7, 100], [5, 90], [3, 75], [2, 60], [1, 40], [0, 20]]
+        }
+      }
+    },
+
+    "d3_business_fundamentals": {
+      "_description": "维度三·工商基本面指标",
+
+      "d3_registered_capital": {
+        "id": "d3_registered_capital",
+        "name": "注册资本",
+        "dimension": "D3",
+        "sub_dimension": "工商基本面",
+        "unit": "亿元",
+        "direction": "higher_better",
+        "description": "注册资本反映股东出资承诺规模，越高说明资本实力越强。50亿以上为超大型企业。",
+        "default_thresholds": [
+          [50, 100], [10, 95], [5, 90], [1, 80], [0.5, 70], [0.1, 55], [0.05, 40], [0.01, 20]
+        ]
+      },
+
+      "d3_paid_capital_ratio": {
+        "id": "d3_paid_capital_ratio",
+        "name": "实缴资本比例",
+        "dimension": "D3",
+        "sub_dimension": "工商基本面",
+        "unit": "%",
+        "direction": "higher_better",
+        "description": "实缴资本占注册资本比例。100%→足额实缴最优。低实缴比例→股东承诺未兑现，信用风险上升。",
+        "default_thresholds": [
+          [100, 100], [80, 90], [50, 75], [30, 55], [15, 35], [5, 20], [0, 10]
+        ]
+      },
+
+      "d3_establishment_years": {
+        "id": "d3_establishment_years",
+        "name": "成立年限",
+        "dimension": "D3",
+        "sub_dimension": "工商基本面",
+        "unit": "年",
+        "direction": "higher_better",
+        "description": "企业存续年限。30年以上→经历过多次经济周期，稳定性极强。",
+        "default_thresholds": [
+          [30, 100], [20, 95], [15, 90], [10, 80], [5, 65], [3, 50], [1, 30], [0, 10]
+        ]
+      },
+
+      "d3_insured_employees": {
+        "id": "d3_insured_employees",
+        "name": "参保人数",
+        "dimension": "D3",
+        "sub_dimension": "工商基本面",
+        "unit": "人",
+        "direction": "higher_better",
+        "description": "社保参保人数（含分支机构）。反映真实用工规模，是验证企业规模的硬指标。",
+        "default_thresholds": [
+          [10000, 100], [5000, 95], [1000, 90], [500, 80], [100, 70], [50, 55], [20, 40], [10, 25], [0, 10]
+        ]
+      }
+    },
+
+    "d3_business_activity": {
+      "_description": "维度三·经营活跃度指标",
+
+      "d3_bidding_wins": {
+        "id": "d3_bidding_wins",
+        "name": "招投标中标数",
+        "dimension": "D3",
+        "sub_dimension": "经营活跃度",
+        "unit": "条",
+        "direction": "higher_better",
+        "description": "近2年公开招投标中标记录数。反映企业市场参与度和业务拓展能力。0条不代表无经营（纯零售企业可能不参与招投标）。",
+        "default_thresholds": [
+          [500, 100], [200, 95], [100, 90], [50, 80], [20, 70], [5, 55], [1, 40], [0, 25]
+        ]
+      },
+
+      "d3_tax_rating": {
+        "id": "d3_tax_rating",
+        "name": "纳税信用评级",
+        "dimension": "D3",
+        "sub_dimension": "经营活跃度",
+        "unit": "等级",
+        "direction": "discrete",
+        "description": "税务部门评定的纳税信用等级。A级最优，D级最差。连续A级年数越多越加分。",
+        "lookup": {
+          "A": 100,
+          "B": 70,
+          "C": 40,
+          "D": 10,
+          "无记录": 30
+        },
+        "bonus": {
+          "consecutive_a_years": { "threshold": 5, "bonus_per_year": 0.5, "max_bonus": 10 }
+        }
+      },
+
+      "d3_patents": {
+        "id": "d3_patents",
+        "name": "专利/软著数",
+        "dimension": "D3",
+        "sub_dimension": "经营活跃度",
+        "unit": "件",
+        "direction": "higher_better",
+        "description": "企业持有的专利/软著总数。反映技术实力和创新活跃度。",
+        "default_thresholds": [
+          [50000, 100], [10000, 95], [5000, 90], [1000, 80], [100, 65], [10, 45], [1, 30], [0, 15]
+        ]
+      }
+    },
+
+    "d3_financial_health": {
+      "_description": "维度三·财务健康度指标（上市核企使用真实财报）",
+
+      "d3_revenue": {
+        "id": "d3_revenue",
+        "name": "营业收入",
+        "dimension": "D3",
+        "sub_dimension": "财务健康度",
+        "unit": "亿元",
+        "direction": "higher_better",
+        "description": "最近完整财年营业收入。千亿级为行业龙头。",
+        "default_thresholds": [
+          [5000, 100], [1000, 95], [500, 90], [100, 80], [50, 70], [10, 55], [1, 35], [0, 15]
+        ]
+      },
+
+      "d3_net_profit": {
+        "id": "d3_net_profit",
+        "name": "归母净利润",
+        "dimension": "D3",
+        "sub_dimension": "财务健康度",
+        "unit": "亿元",
+        "direction": "higher_better",
+        "description": "最近完整财年归属母公司净利润。百亿级为行业绝对龙头。",
+        "default_thresholds": [
+          [500, 100], [100, 95], [50, 90], [10, 80], [5, 70], [1, 55], [0.1, 40], [0, 15]
+        ]
+      },
+
+      "d3_debt_ratio": {
+        "id": "d3_debt_ratio",
+        "name": "资产负债率",
+        "dimension": "D3",
+        "sub_dimension": "财务健康度",
+        "unit": "%",
+        "direction": "sweet_spot",
+        "sweet_spot": [40, 50],
+        "description": "核企资产负债率。40-50%为制造业安全区间。>70%需关注偿债风险。",
+        "default_thresholds": [
+          [40, 100], [50, 100], [30, 90], [60, 90], [20, 75], [70, 75], [10, 50], [80, 50], [0, 25], [100, 25]
+        ]
+      },
+
+      "d3_operating_cashflow": {
+        "id": "d3_operating_cashflow",
+        "name": "经营性现金流",
+        "dimension": "D3",
+        "sub_dimension": "财务健康度",
+        "unit": "亿元",
+        "direction": "higher_better",
+        "description": "最近完整财年经营活动现金流净额。正值→造血能力强，负值→需外部输血。",
+        "default_thresholds": [
+          [500, 100], [100, 95], [50, 90], [10, 80], [1, 70], [0.1, 55], [0, 40], [-10, 15]
+        ]
+      },
+
+      "d3_guarantee_ratio": {
+        "id": "d3_guarantee_ratio",
+        "name": "对外担保/净资产",
+        "dimension": "D3",
+        "sub_dimension": "财务健康度",
+        "unit": "%",
+        "direction": "lower_better",
+        "description": "对外担保余额占净资产比例。>50%→担保风险显著上升。",
+        "default_thresholds": [
+          [0, 100], [10, 95], [20, 85], [30, 75], [40, 60], [50, 45], [80, 20], [100, 10]
+        ]
+      }
+    },
+
+    "d3_unlisted_proxy": {
+      "_description": "维度三·非上市核企代理指标（替代财务健康度）",
+
+      "_rule": "非上市核企财务健康度 = (d3_proxy_tax × 0.4 + d3_proxy_insured × 0.3 + d3_proxy_bidding × 0.3) × 0.85",
+
+      "d3_proxy_tax": {
+        "id": "d3_proxy_tax",
+        "name": "纳税额(代理营收)",
+        "dimension": "D3",
+        "sub_dimension": "财务健康度(代理)",
+        "unit": "万元",
+        "direction": "higher_better",
+        "description": "年纳税额，代理反映营收规模。",
+        "default_thresholds": [
+          [100000, 100], [50000, 95], [10000, 90], [5000, 80], [1000, 65], [100, 45], [10, 25]
+        ]
+      },
+
+      "d3_proxy_insured": {
+        "id": "d3_proxy_insured",
+        "name": "参保人数(代理利润)",
+        "dimension": "D3",
+        "sub_dimension": "财务健康度(代理)",
+        "unit": "人",
+        "direction": "higher_better",
+        "description": "社保参保人数，代理反映盈利能力/人员规模。",
+        "default_thresholds": [
+          [10000, 100], [5000, 95], [1000, 90], [500, 80], [100, 65], [50, 50], [20, 35], [10, 20]
+        ]
+      },
+
+      "d3_proxy_bidding": {
+        "id": "d3_proxy_bidding",
+        "name": "招投标活跃度(代理现金流)",
+        "dimension": "D3",
+        "sub_dimension": "财务健康度(代理)",
+        "unit": "条",
+        "direction": "higher_better",
+        "description": "近2年招投标中标数，代理反映经营现金流质量。",
+        "default_thresholds": [
+          [500, 100], [200, 95], [100, 90], [50, 80], [20, 65], [5, 50], [1, 35], [0, 20]
+        ]
+      }
+    },
+
+    "d3_judicial_redline": {
+      "_description": "维度三·司法信用红线（一票否决制）",
+
+      "redlines": ["R001", "R002", "R003", "R004", "R005", "R006"],
+
+      "scoring_rule": {
+        "listed_all_clear_dual_source": {
+          "score": 100,
+          "condition": "上市公司 + 6条红线全部未触发 + 每条双源验证(Tier 1至少一个)"
+        },
+        "unlisted_all_clear_dual_source": {
+          "score": 85,
+          "condition": "非上市公司 + 6条红线全部未触发 + 每条双源验证(Tier 1至少一个)",
+          "note": "非上市公司信息披露确定性低于上市公司，满分85"
+        },
+        "any_redline_triggered": {
+          "score": 0,
+          "effect": "维度三整体归零，综合评级锁定D",
+          "note": "一票否决，不可恢复"
+        },
+        "insufficient_verification": {
+          "score": null,
+          "effect": "任何一条红线确认不完整 → 转人工，自动评级不通过"
+        }
+      }
+    },
+
+    "d4_scale_structure": {
+      "_description": "维度四·规模结构指标",
+
+      "d4_dealer_count": {
+        "id": "d4_dealer_count",
+        "name": "经销商总数",
+        "dimension": "D4",
+        "sub_dimension": "规模结构",
+        "unit": "家",
+        "direction": "higher_better",
+        "description": "经销商网络中的活跃经销商总数。数量越多覆盖面越广，但需结合体系健康度综合判断。",
+        "default_thresholds": [
+          [200, 100], [100, 95], [50, 85], [30, 75], [10, 60], [5, 45], [1, 25]
+        ]
+      },
+
+      "d4_tier_count": {
+        "id": "d4_tier_count",
+        "name": "渠道层级数",
+        "dimension": "D4",
+        "sub_dimension": "规模结构",
+        "unit": "级",
+        "direction": "discrete",
+        "description": "经销渠道的层级深度。2-3级为正常范围：2级扁平高效，3级覆盖深广。1级覆盖不足，4级以上管理复杂。",
+        "lookup": {
+          "1": 65,
+          "2": 80,
+          "3": 85,
+          "4": 60,
+          "5": 40
+        }
+      },
+
+      "d4_regional_coverage": {
+        "id": "d4_regional_coverage",
+        "name": "省级区域覆盖",
+        "dimension": "D4",
+        "sub_dimension": "规模结构",
+        "unit": "省",
+        "direction": "higher_better",
+        "description": "经销商网络覆盖的省级行政区数量。全国31省全覆盖为最优。",
+        "default_thresholds": [
+          [31, 100], [25, 95], [20, 85], [15, 75], [10, 65], [5, 50], [1, 30]
+        ]
+      }
+    },
+
+    "d4_system_health": {
+      "_description": "维度四·体系健康指标",
+
+      "d4_abnormal_ratio": {
+        "id": "d4_abnormal_ratio",
+        "name": "异常/注销比例",
+        "dimension": "D4",
+        "sub_dimension": "体系健康",
+        "unit": "%",
+        "direction": "lower_better",
+        "description": "经销商中工商状态异常或已注销的比例。比例越高体系越不稳定。",
+        "default_thresholds": [
+          [0, 100], [1, 95], [3, 85], [5, 75], [10, 60], [20, 40], [30, 20]
+        ]
+      },
+
+      "d4_median_establishment_years": {
+        "id": "d4_median_establishment_years",
+        "name": "经销商成立年限中位数",
+        "dimension": "D4",
+        "sub_dimension": "体系健康",
+        "unit": "年",
+        "direction": "higher_better",
+        "description": "经销商成立年限的中位数。反映体系的成熟稳定程度。",
+        "default_thresholds": [
+          [20, 100], [15, 95], [10, 85], [7, 75], [5, 65], [3, 50], [1, 30], [0, 10]
+        ]
+      },
+
+      "d4_median_insured": {
+        "id": "d4_median_insured",
+        "name": "经销商参保人数中位数",
+        "dimension": "D4",
+        "sub_dimension": "体系健康",
+        "unit": "人",
+        "direction": "higher_better",
+        "description": "经销商社保参保人数的中位数。反映经销商的真实经营规模。",
+        "default_thresholds": [
+          [200, 100], [100, 95], [50, 85], [20, 70], [10, 55], [5, 40], [0, 15]
+        ]
+      }
+    },
+
+    "d4_concentration": {
+      "_description": "维度四·集中度指标（越低越好，避免单一依赖）",
+
+      "d4_top1_share": {
+        "id": "d4_top1_share",
+        "name": "前1经销商占比",
+        "dimension": "D4",
+        "sub_dimension": "集中度",
+        "unit": "%",
+        "direction": "lower_better",
+        "description": "最大经销商占体系总销售额/采购额的比例。>30%=高度依赖单一经销商，风险集中。",
+        "default_thresholds": [
+          [3, 100], [5, 95], [10, 90], [15, 80], [20, 70], [30, 55], [40, 40], [50, 25]
+        ]
+      },
+
+      "d4_top3_share": {
+        "id": "d4_top3_share",
+        "name": "前3经销商占比",
+        "dimension": "D4",
+        "sub_dimension": "集中度",
+        "unit": "%",
+        "direction": "lower_better",
+        "description": "前3大经销商合计占比。>50%=过度集中，议价能力偏向经销商。",
+        "default_thresholds": [
+          [10, 100], [20, 95], [30, 85], [40, 75], [50, 60], [60, 45], [70, 30]
+        ]
+      },
+
+      "d4_single_region_concentration": {
+        "id": "d4_single_region_concentration",
+        "name": "单区域集中度",
+        "dimension": "D4",
+        "sub_dimension": "集中度",
+        "unit": "%",
+        "direction": "lower_better",
+        "description": "最大单一省级区域的销售占比。>40%=区域风险集中。",
+        "default_thresholds": [
+          [5, 100], [10, 95], [20, 85], [30, 75], [40, 60], [50, 45], [60, 25]
+        ]
+      }
+    },
+
+    "d4_related_party": {
+      "_description": "维度四·关联自融排查",
+
+      "checks": [
+        { "id": "RP001", "name": "核企→经销商股权穿透", "penalty_per_check": -20, "unit": "D4分" },
+        { "id": "RP002", "name": "核企与经销商实控人重合", "penalty_per_check": -20, "unit": "D4分" },
+        { "id": "RP003", "name": "核企与经销商高管重合", "penalty_per_check": -15, "unit": "D4分" },
+        { "id": "RP004", "name": "经销商间实控人相同", "penalty_per_check": -15, "unit": "D4分" }
+      ],
+
+      "scoring_rule": {
+        "all_clear": { "effect": "不扣分", "condition": "4项检查全部通过" },
+        "any_triggered": { "effect": "逐项扣分，累计扣分无上限", "condition": "任一项触发关联嫌疑" },
+        "self_financing_confirmed": { "effect": "扣30分 + 标记'关联自融高风险'", "condition": "RP001+RP002同时触发" }
+      }
+    }
+  },
+
+  "unlisted_proxy_rules": {
+    "_description": "非上市企业代理指标映射 + 降权系数",
+
+    "dimension_2_brand_finance": {
+      "listed": {
+        "indicators": ["品牌毛利率", "经营现金流/营收"],
+        "weights": [0.5, 0.5]
+      },
+      "unlisted": {
+        "indicators": ["行业营收排名", "纳税额", "招投标活跃度"],
+        "weights": [0.4, 0.3, 0.3],
+        "discount_factor": 0.80,
+        "note": "非上市品牌无法获取财报，用行业排名+纳税+招投标代理，整体×0.80降权"
+      }
+    },
+
+    "dimension_3_financial_health": {
+      "listed": {
+        "indicators": ["d3_revenue", "d3_net_profit", "d3_debt_ratio", "d3_operating_cashflow"],
+        "weights": [0.25, 0.25, 0.25, 0.25]
+      },
+      "unlisted": {
+        "indicators": ["d3_proxy_tax", "d3_proxy_insured", "d3_proxy_bidding"],
+        "weights": [0.4, 0.3, 0.3],
+        "discount_factor": 0.85,
+        "note": "非上市核企无公开财报，用纳税(40%)+参保(30%)+招投标(30%)代理，整体×0.85降权"
+      }
+    },
+
+    "dimension_3_judicial_redline": {
+      "listed_ceiling": 100,
+      "unlisted_ceiling": 85,
+      "note": "非上市公司信息披露确定性低于上市公司，红线清白的满分85而非100"
+    }
+  },
+
+  "data_missing_rules": {
+    "_description": "数据缺失时的处理规则",
+
+    "single_indicator_missing": {
+      "action": "impute_from_sibling",
+      "method": "取同维度/同子维度其他指标均值作为插补值",
+      "max_missing_ratio": 0.5
+    },
+
+    "sub_dimension_missing": {
+      "action": "redistribute_weight",
+      "method": "缺失子维度的权重按比例分配给同维度其他子维度",
+      "min_items_required": 1
+    },
+
+    "entire_dimension_missing": {
+      "action": "merge_to_d3",
+      "method": "缺失维度的权重全部并入D3(核企自身信用)",
+      "exception": "D3数据<60%或红线未确认→转人工"
+    },
+
+    "d3_insufficient": {
+      "action": "transfer_to_human",
+      "condition": "D3可用数据<60% 或 任一条红线未双源确认",
+      "message": "核企自身信用数据不足，自动评级不可用，转人工处理"
+    }
+  },
+
+  "scoring_engine_config": {
+    "_description": "评分引擎运行参数",
+
+    "interpolation_method": "linear",
+    "score_range": [0, 100],
+    "score_precision": 0,
+    "external_adjustment_max": 10,
+    "external_adjustment_min": -10,
+    "external_adjustment_requires_source": true,
+    "d3_redline_triggered_d3_score": 0,
+    "d3_redline_triggered_rating_lock": "D"
+  }
+}

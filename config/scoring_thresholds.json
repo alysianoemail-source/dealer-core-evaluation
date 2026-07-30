@@ -1,0 +1,105 @@
+{
+  "version": "v1.0",
+  "last_updated": "2026-07-26",
+  "description": "通用比率打分阈值表。评分逻辑：公司值÷行业基准值→比率→查表得分数。每个分数的含义可追溯至'该指标是行业基准的X倍'。",
+
+  "scoring_method": "ratio_to_benchmark",
+
+  "benchmark_source_priority": [
+    {"source": "ifind_edb", "type": "全行业平均值", "coverage": "全行业企业（含非上市）", "vintage_note": "最新可用年份，通常滞后12-18个月"},
+    {"source": "ifind_stock", "type": "上市公司中位数", "coverage": "同申万二级行业上市公司", "vintage_note": "可用最新年报/季报"},
+    {"source": "qcc", "type": "同行业企业分位数", "coverage": "QCC数据库内同行业企业", "vintage_note": "实时"}
+  ],
+
+  "mappings": {
+    "higher_better": {
+      "_description": "越高越好型指标（ROE、营收增速、利润率等）。ratio = 公司值 / 行业基准值",
+      "thresholds": [
+        {"ratio_min": 5.0,  "score": 98, "label": "行业绝对龙头", "explanation": "指标值是行业均值的5倍以上"},
+        {"ratio_min": 3.0,  "score": 93, "label": "行业标杆",     "explanation": "指标值是行业均值的3-5倍"},
+        {"ratio_min": 2.0,  "score": 85, "label": "远超行业",     "explanation": "指标值是行业均值的2-3倍"},
+        {"ratio_min": 1.5,  "score": 78, "label": "显著领先",     "explanation": "指标值是行业均值的1.5-2倍"},
+        {"ratio_min": 1.2,  "score": 70, "label": "优于行业",     "explanation": "指标值比行业均值高20%-50%"},
+        {"ratio_min": 1.0,  "score": 60, "label": "行业平均",     "explanation": "指标值与行业均值持平（±20%）"},
+        {"ratio_min": 0.8,  "score": 50, "label": "略低于行业",   "explanation": "指标值比行业均值低20%以内"},
+        {"ratio_min": 0.5,  "score": 35, "label": "弱于行业",     "explanation": "指标值仅为行业均值的50%-80%"},
+        {"ratio_min": 0.2,  "score": 20, "label": "远弱于行业",   "explanation": "指标值仅为行业均值的20%-50%"},
+        {"ratio_min": 0.0,  "score":  5, "label": "行业末流",     "explanation": "指标值不足行业均值的20%"}
+      ]
+    },
+
+    "lower_better": {
+      "_description": "越低越好型指标（负债率、异常比例、集中度等）。ratio = 行业基准值 / 公司值（取倒数使方向一致）",
+      "thresholds": [
+        {"ratio_min": 5.0,  "score": 98, "label": "远优于行业"},
+        {"ratio_min": 3.0,  "score": 93, "label": "显著优于行业"},
+        {"ratio_min": 2.0,  "score": 85, "label": "大幅优于行业"},
+        {"ratio_min": 1.5,  "score": 78, "label": "明显优于行业"},
+        {"ratio_min": 1.2,  "score": 70, "label": "优于行业"},
+        {"ratio_min": 1.0,  "score": 60, "label": "行业平均"},
+        {"ratio_min": 0.8,  "score": 50, "label": "略差于行业"},
+        {"ratio_min": 0.5,  "score": 35, "label": "差于行业"},
+        {"ratio_min": 0.2,  "score": 20, "label": "远差于行业"},
+        {"ratio_min": 0.0,  "score":  5, "label": "行业最差"}
+      ]
+    },
+
+    "sweet_spot": {
+      "_description": "适中最优型指标（如资产负债率40-60%最优）。在最优区间内得分最高，偏离扣分。",
+      "method": "distance_from_optimal_range",
+      "rules": [
+        {"condition": "在最优区间内",             "score": 95,  "label": "最优区间"},
+        {"condition": "偏离最优区间 ≤10%",        "score": 80,  "label": "接近最优"},
+        {"condition": "偏离最优区间 10%-20%",     "score": 65,  "label": "略有偏离"},
+        {"condition": "偏离最优区间 20%-40%",     "score": 45,  "label": "明显偏离"},
+        {"condition": "偏离最优区间 >40%",         "score": 20,  "label": "严重偏离"}
+      ]
+    },
+
+    "discrete": {
+      "_description": "离散型指标（纳税评级、品牌等级等），直接查表映射，不计算比率。",
+      "method": "direct_lookup"
+    },
+
+    "redline": {
+      "_description": "红线型指标（失信、违法等），触发则整个维度归零，不需要比率打分。",
+      "method": "one_vote_veto"
+    }
+  },
+
+  "edge_cases": {
+    "industry_benchmark_zero_or_negative": {
+      "action": "fallback_to_peer_percentile",
+      "description": "行业基准值≤0时（如行业整体亏损导致ROE均值为负），改用同行业上市公司百分位排名打分"
+    },
+    "company_value_missing": {
+      "action": "mark_missing",
+      "description": "公司数据缺失时标记为缺失，按data_missing_rules处理"
+    },
+    "benchmark_missing": {
+      "action": "fallback_to_next_source",
+      "description": "优先数据源不可用时，按benchmark_source_priority顺序降级"
+    }
+  },
+
+  "percentile_fallback": {
+    "_description": "当行业基准值不可用或≤0时，回退到上市公司百分位排名。此表仅在fallback时使用。",
+    "thresholds": [
+      {"percentile_min": 95, "score": 98, "label": "行业前5%"},
+      {"percentile_min": 90, "score": 93, "label": "行业前10%"},
+      {"percentile_min": 80, "score": 85, "label": "行业前20%"},
+      {"percentile_min": 65, "score": 75, "label": "行业中上"},
+      {"percentile_min": 35, "score": 60, "label": "行业中游"},
+      {"percentile_min": 20, "score": 45, "label": "行业中下"},
+      {"percentile_min": 10, "score": 30, "label": "行业偏弱"},
+      {"percentile_min": 5,  "score": 15, "label": "行业末流"},
+      {"percentile_min": 0,  "score":  5, "label": "行业垫底"}
+    ]
+  },
+
+  "ratio_interpolation": {
+    "_description": "比率落在两个阈值之间时，线性插值计算分数（避免断点跳跃）",
+    "enabled": true,
+    "example": "ratio=2.5(介于2.0→85和3.0→93之间) → score=85+(93-85)*(2.5-2.0)/(3.0-2.0)=89"
+  }
+}

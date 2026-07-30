@@ -1,0 +1,105 @@
+{
+  "version": "v1.0",
+  "last_updated": "2026-07-26",
+  "description": "EDB指标查询映射表。将评分指标体系中的逻辑指标映射到iFinD EDB的实际查询语句。支持行业参数化——{industry}会被替换为实际行业名称。",
+
+  "query_template": "{industry}:{metric}:全行业平均值",
+
+  "indicators": {
+    "资产负债率": {
+      "dimension": "D1/D3",
+      "direction": "lower_better",
+      "edb_query": "{industry}制造业:资产负债率:全行业平均值",
+      "verified_query": "家用电器制造业:资产负债率:全行业平均值",
+      "verified_index_id": "M009913056",
+      "unit": "%",
+      "notes": "结构比率，年际波动极小，2024数据可用于2025比较"
+    },
+
+    "净资产收益率": {
+      "dimension": "D1/D3",
+      "direction": "higher_better",
+      "edb_query": "{industry}制造业:净资产收益率:全行业平均值",
+      "verified_query": "家用电器制造业:净资产收益率:全行业平均值",
+      "verified_index_id": "S000037962",
+      "unit": "%",
+      "notes": "全行业均值通常很低（家电3.2%），因为包含了大量小微企业"
+    },
+
+    "销售利润率": {
+      "dimension": "D1",
+      "direction": "higher_better",
+      "edb_query": "{industry}制造业:销售利润率:全行业平均值",
+      "verified_query": "家用电器制造业:销售利润率:全行业平均值",
+      "unit": "%"
+    },
+
+    "存货周转率": {
+      "dimension": "D1",
+      "direction": "higher_better",
+      "edb_query": "{industry}制造业:存货周转率:全行业平均值",
+      "verified_query": "家用电器制造业:存货周转率:全行业平均值",
+      "unit": "次"
+    },
+
+    "总资产报酬率": {
+      "dimension": "D1",
+      "direction": "higher_better",
+      "edb_query": "{industry}制造业:总资产报酬率:全行业平均值",
+      "verified_query": "家用电器制造业:总资产报酬率:全行业平均值",
+      "unit": "%"
+    },
+
+    "营收增速": {
+      "dimension": "D1",
+      "direction": "higher_better",
+      "edb_query": "{broad_industry}:营业收入:累计同比增长",
+      "verified_query": "电气机械和器材制造业:营业收入:累计同比增长",
+      "unit": "%",
+      "frequency": "月度",
+      "notes": "营收增速通常映射到更宽泛的行业分类（如电气机械vs家用电器），因为细分类别不一定有月度增速统计"
+    }
+  },
+
+  "industry_name_mapping": {
+    "_description": "将申万行业名称映射到EDB使用的行业名称。EDB的行业分类体系与申万不同。",
+    "家用电器": {
+      "edb_industry": "家用电器",
+      "edb_broad_industry": "电气机械和器材",
+      "sw_level2": "白色家电"
+    },
+    "消费电子": {
+      "edb_industry": "计算机通信和其他电子设备",
+      "edb_broad_industry": "计算机通信和其他电子设备",
+      "sw_level2": "消费电子"
+    },
+    "汽车": {
+      "edb_industry": "汽车",
+      "edb_broad_industry": "汽车",
+      "sw_level2": "汽车整车"
+    },
+    "新能源": {
+      "edb_industry": "电气机械和器材",
+      "edb_broad_industry": "电气机械和器材",
+      "sw_level2": "光伏设备"
+    }
+  },
+
+  "data_vintage": {
+    "_description": "各数据源的时效性说明。在报告中标注数据年份。",
+    "edb_annual_meanings": "全行业平均值，年度更新，通常滞后12-18个月。当前最新可用为2024年度。",
+    "edb_monthly": "月度频率指标，通常滞后2-3个月。营收增速等指标可用到最近一个完整月份。",
+    "ifind_stock": "上市公司财报数据。年报滞后4个月，季报滞后1-2个月。当前可用2025年报+2026Q1。",
+    "qcc": "工商/司法数据，实时或准实时。"
+  },
+
+  "fallback_strategy": {
+    "_description": "当EDB查询无结果时的降级策略",
+    "steps": [
+      {"try": "edb_query with {industry}"},
+      {"try": "edb_query with {broad_industry}"},
+      {"try": "listed_peer_median via ifind search_stocks + get_stock_financials"},
+      {"fallback": "mark_benchmark_unavailable → 该指标不参与评分，权重重新分配"}
+    ]
+  }
+}

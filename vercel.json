@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "buildCommand": null,
+  "devCommand": null,
+  "installCommand": "pip install -r requirements.txt",
+  "functions": {
+    "api/evaluate.py": {
+      "memory": 512,
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/$1" }
+  ]
+}

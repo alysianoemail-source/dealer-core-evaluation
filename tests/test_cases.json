@@ -1,0 +1,103 @@
+{
+  "version": "v0.1",
+  "last_updated": "2026-07-23",
+  "source": "核企智评_交互演示(3).html + 经销商评价报告_荣耀_松联科技.txt",
+  "description": "初始测试数据集，用于验证L1校验+L2评分+红线检查+报告生成的完整流程",
+  "test_cases": [
+    {
+      "id": "TC01",
+      "core_name": "华曜智能终端有限公司",
+      "dealer_name": "北辰渠道科技有限公司",
+      "industry": "消费电子",
+      "expected": {
+        "d1_score": 94,
+        "d3_score": 90,
+        "status": "通过",
+        "redline_triggered": false,
+        "rating": "A"
+      },
+      "description": "正常通过案例—双高评分",
+      "priority": "P0"
+    },
+    {
+      "id": "TC02",
+      "core_name": "恒岳智慧家电有限公司",
+      "dealer_name": "盛联商贸有限公司",
+      "industry": "智能家电",
+      "expected": {
+        "d1_score": 80,
+        "d3_score": 80,
+        "status": "通过",
+        "redline_triggered": false,
+        "rating": "A"
+      },
+      "description": "边界案例—80分压线通过",
+      "priority": "P0"
+    },
+    {
+      "id": "TC03",
+      "core_name": "绿驰储能设备有限公司",
+      "dealer_name": "东南能源渠道有限公司",
+      "industry": "储能设备",
+      "expected": {
+        "d1_score": 60,
+        "d3_score": 60,
+        "status": "待复核",
+        "redline_triggered": false,
+        "rating": "C",
+        "note": "存在1项轻微行政处罚，非一票否决"
+      },
+      "description": "待复核案例—轻微处罚",
+      "priority": "P0"
+    },
+    {
+      "id": "TC04",
+      "core_name": "新港工业材料有限公司",
+      "dealer_name": "海岳分销有限公司",
+      "industry": "工业材料",
+      "expected": {
+        "d1_score": 53,
+        "d3_score": 67,
+        "status": "待复核",
+        "redline_triggered": false,
+        "rating": "C",
+        "note": "资料不足（毛利率缺失）"
+      },
+      "description": "待复核案例—数据缺失",
+      "priority": "P1"
+    },
+    {
+      "id": "TC05",
+      "core_name": "远辰精密化工有限公司",
+      "dealer_name": "鑫达供应链有限公司",
+      "industry": "精密化工",
+      "expected": {
+        "d1_score": 87,
+        "d3_score": 0,
+        "status": "不通过",
+        "redline_triggered": true,
+        "redline_name": "R002：重大税收违法失信",
+        "rating": "D"
+      },
+      "description": "红线一票否决案例—触发R002",
+      "priority": "P0"
+    },
+    {
+      "id": "TC06",
+      "core_name": "荣耀终端股份有限公司",
+      "dealer_name": "北京松联科技有限公司",
+      "industry": "消费电子",
+      "expected": {
+        "d1_score": 79,
+        "d3_score": 82,
+        "total_score": 79,
+        "rating": "B",
+        "status": "通过",
+        "redline_triggered": false
+      },
+      "description": "真实案例参考—参考已有评价报告",
+      "reference_report": "经销商评价报告_荣耀_松联科技.txt",
+      "priority": "P0"
+    }
+  ]
+}
