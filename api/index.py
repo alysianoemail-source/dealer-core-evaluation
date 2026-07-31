@@ -23,7 +23,7 @@ import json
 import sys
 import os
 from pathlib import Path
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 
 # ── 把项目根加入 Python 路径 ──
@@ -54,7 +54,10 @@ CORS(app)  # 允许前端跨域请求
 @app.route("/")
 def index():
     """网站首页：返回前端演示页面（部署后访问根地址直接看到界面）"""
-    return app.send_static_file("index.html")
+    index_path = Path(__file__).resolve().parent / "static" / "index.html"
+    if not index_path.exists():
+        return "前端页面未部署（缺 api/static/index.html）", 404
+    return send_file(index_path)
 
 
 @app.route("/api/evaluate", methods=["POST", "OPTIONS"])
