@@ -51,6 +51,12 @@ app = Flask(__name__)
 CORS(app)  # 允许前端跨域请求
 
 
+@app.route("/")
+def index():
+    """网站首页：返回前端演示页面（部署后访问根地址直接看到界面）"""
+    return app.send_static_file("index.html")
+
+
 @app.route("/api/evaluate", methods=["POST", "OPTIONS"])
 def evaluate():
     """评分 API"""
